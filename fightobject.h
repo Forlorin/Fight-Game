@@ -14,10 +14,10 @@ class Hitbox
     int dx,dy;
     int w,h;
 public:
-    void get(int&,int&,int&,int&);
+    void get(int& x,int& y,int& w,int& h);
 
     Hitbox();
-    Hitbox(int,int,int,int);
+    Hitbox(int x,int y,int w,int h);
 };
 
 #define ActionFrame 50
@@ -26,6 +26,7 @@ class Action
 {
     int hittype;
     bool aironly;
+    int damage;
     int loop;
     QString img[ActionFrame];
     Hitbox hits[ActionFrame];
@@ -33,7 +34,10 @@ class Action
 public:
     bool isAirOnly();
     int start();
+    int get_damage();
     int get_hittype();
+    QString get_img(int);
+    Hitbox get_hitbox(int);
 
     Action();
     Action(int);
@@ -49,17 +53,19 @@ class Character
     bool in_air;
     Action acts[actnum];
     int act_doing;
+    int act_pri;
     int act_timer;
     Hitbox hit[2];
 public:
     int get_health();
     int get_status();
     Hitbox get_hitbox();
-
+    QString get_img();
+    Hitbox get_atabox();
 
     void set_health(int);
     void set_status(int);
-    bool do_act(int);
+    bool do_act(int id,int pri);
     void set_in_air(bool);
 
     void update();
@@ -81,7 +87,7 @@ public:
     FlyObject* pre;
     FlyObject* next;
 
-    FlyObject(int,int,int);
+    FlyObject(int x,int y,int id);
 };
 
 class FightObject
@@ -93,7 +99,7 @@ public:
 
     void flydelete(FlyObject*);
     void flyupdate();
-    void flyadd(int,int,int);
+    void flyadd(int vx,int vy,int id);
 
     FightObject(int,int,int,int);
 };

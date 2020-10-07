@@ -1,6 +1,6 @@
 #-------------------------------------------------
 #
-# Project created by QtCreator 2020-09-21T08:44:51
+# Project created by QtCreator 2020-09-21T08:41:08
 #
 #-------------------------------------------------
 
@@ -26,11 +26,13 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
         main.cpp \
         widget.cpp \
-    fightobject.cpp
+    fightobject.cpp \
+    inputslot.cpp
 
 HEADERS += \
         widget.h \
-    fightobject.h
+    fightobject.h \
+    inputslot.h
 
 FORMS += \
         widget.ui

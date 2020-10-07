@@ -2,8 +2,10 @@
 #define WIDGET_H
 
 #include <QWidget>
+#include <QString>
+#include <inputslot.h>
+#include <QDebug>
 #include <QLabel>
-#include <QTimer>
 
 namespace Ui {
 class Widget;
@@ -11,15 +13,26 @@ class Widget;
 
 class Widget : public QWidget
 {
-
     Q_OBJECT
-    QLabel hpBar[2];
-    QLabel fighter[2];
-    QTimer* myTimer;
-
 public:
+    inputslot input;
+
+    int tottime;
+
+    QLabel* La[2];
+
+    QLabel* Ltime;
+
+    int timer;  
+
     explicit Widget(QWidget *parent = 0);
-    void upDate();
+
+    void timerEvent(QTimerEvent *);
+
+    void keyPressEvent(QKeyEvent *);
+
+    void viewupdate();
+
     ~Widget();
 
 private:

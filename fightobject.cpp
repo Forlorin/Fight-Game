@@ -29,16 +29,22 @@ void FightObject::flyupdate()
     while(tp!=nullptr)
     {
         int dx,dy,dw,dh;
+        tp->x+=tp->v_x;
+        tp->y+=tp->v_y;//position
         tp->hit.get(dx,dy,dw,dh);
         if(tp->x+dx>this->w||tp->x+dx+dw<0)
         {
             tp=tp->next;
             flydelete(tp);
         }
+        else if(1)//y
+        {
+
+        }
     }
 }
 
-void FightObject::flyadd(int, int, int)
+void FightObject::flyadd(int vx, int vy, int id)
 {
 
 }
@@ -86,9 +92,28 @@ int Action::start()
     return loop;
 }
 
+int Action::get_damage()
+{
+    return damage;
+}
+
 int Action::get_hittype()
 {
     return hittype;
+}
+
+QString Action::get_img(int time)
+{
+    int temp=0;
+    while(time>=hitstime[temp])
+    {
+
+    }
+}
+
+Hitbox Action::get_hitbox(int time)
+{
+
 }
 
 Action::Action()
@@ -134,11 +159,12 @@ void Character::set_status(int s)
     status=s;
 }
 
-bool Character::do_act(int id)
+bool Character::do_act(int id,int pri)
 {
-    if(status==0&&acts[id].isAirOnly()==in_air)
+    if(status==0&&acts[id].isAirOnly()==in_air&&pri>act_pri)
     {
         act_doing=id;
+        act_pri=pri;
         act_timer=acts[id].start();
         return true;
     }
@@ -158,8 +184,10 @@ void Character::update()
         if(act_timer==0)
         {
             status=0;
-            do_act(0);
-            return;
+            if(do_act(0,-1))
+                return;
+            else
+                do_act(1,-1);
         }
         act_timer--;
     }
