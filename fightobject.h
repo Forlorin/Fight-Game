@@ -87,7 +87,7 @@ public:
     FlyObject* pre;
     FlyObject* next;
 
-    FlyObject(int x,int y,int id);
+    FlyObject(int x, int y, int id, bool right);
 };
 
 class FightObject
@@ -99,7 +99,7 @@ public:
 
     void flydelete(FlyObject*);
     void flyupdate();
-    void flyadd(int vx,int vy,int id);
+    void flyadd(int x, int y, int id,bool right);
 
     FightObject(int,int,int,int);
 };

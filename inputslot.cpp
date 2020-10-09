@@ -9,13 +9,28 @@ void inputslot::push(int id,bool face)
     case Qt::Key_D:
     case Qt::Key_W:
     case Qt::Key_S:
+    case Qt::Key_J:
+    case Qt::Key_K:
+    case Qt::Key_L:
+    case Qt::Key_U:
+    case Qt::Key_I:
+    case Qt::Key_O:
         pl[0].push(trans(id,face));
         break;
     case Qt::Key_Up:
     case Qt::Key_Down:
     case Qt::Key_Left:
     case Qt::Key_Right:
+    case Qt::Key_1:
+    case Qt::Key_2:
+    case Qt::Key_3:
+    case Qt::Key_4:
+    case Qt::Key_5:
+    case Qt::Key_6:
         pl[1].push(trans(id,face));
+        break;
+    default:
+        qDebug()<<"Error push fail :"<<id;
     }
 }
 
@@ -33,47 +48,52 @@ void inputslot::getSt(int &a, int &b)
 
 int inputslot::trans(int id,bool face)
 {
-    if(face)//W is left
+    switch(id)
     {
-        switch(id)
-        {
-        case Qt::Key_W:
-        case Qt::Key_Up:
-            return Qt::Key_W;
-        case Qt::Key_A:
-        case Qt::Key_Left:
-            return Qt::Key_A;
-        case Qt::Key_D:
-        case Qt::Key_Right:
-            return Qt::Key_D;
-        case Qt::Key_S:
-        case Qt::Key_Down:
-            return Qt::Key_S;
-        default:
-            qDebug()<<"Error Keytrans "<<id;
-            return 0;
-        }
-    }
-    else
-    {
-        switch(id)
-        {
-        case Qt::Key_W:
-        case Qt::Key_Up:
-            return Qt::Key_W;
-        case Qt::Key_A:
-        case Qt::Key_Left:
-            return Qt::Key_D;//here
-        case Qt::Key_D:
-        case Qt::Key_Right:
-            return Qt::Key_A;//and here
-        case Qt::Key_S:
-        case Qt::Key_Down:
-            return Qt::Key_S;
-        default:
-            qDebug()<<"Error Keytrans "<<id;
-            return 0;
-        }
+    case Qt::Key_W:
+    case Qt::Key_Up:
+        return Qt::Key_Up;
+    case Qt::Key_A:
+        if(face)
+        return Qt::Key_Left;
+        return Qt::Key_Right;
+    case Qt::Key_Left:
+        if(face)
+        return Qt::Key_Right;
+        return Qt::Key_Left;
+    case Qt::Key_D:
+        if(face)
+        return Qt::Key_Right;
+        return Qt::Key_Left;
+    case Qt::Key_Right:
+        if(face)
+        return Qt::Key_Left;
+        return Qt::Key_Right;
+    case Qt::Key_S:
+    case Qt::Key_Down:
+        return Qt::Key_Down;
+    case Qt::Key_J:
+    case Qt::Key_1:
+        return Qt::Key_J;
+    case Qt::Key_K:
+    case Qt::Key_2:
+        return Qt::Key_K;
+    case Qt::Key_L:
+    case Qt::Key_3:
+        return Qt::Key_L;
+    case Qt::Key_U:
+    case Qt::Key_4:
+        return Qt::Key_U;
+    case Qt::Key_I:
+    case Qt::Key_5:
+        return Qt::Key_I;
+    case Qt::Key_O:
+    case Qt::Key_6:
+        return Qt::Key_O;
+
+    default:
+        qDebug()<<"Error Keytrans "<<id;
+        return 0;
     }
 }
 
@@ -142,6 +162,7 @@ skillslot::skillslot()
 
 skillslot::skillslot(int id)
 {
+    this->id=id;
     for(int i=0;i<skill_len;i++)
     {
         queue[i]=0;
@@ -152,31 +173,101 @@ skillslot::skillslot(int id)
     switch(id)
     {
     case 0:
-        len=3;
-        priority=2;
-        queue[0]=Qt::Key_A;time[0]=3;
-        queue[1]=Qt::Key_D;time[1]=3;
-        queue[2]=Qt::Key_W;time[2]=3;
+        len=1;
+        priority=1;
+        queue[0]=Qt::Key_J;time[0]=0;
         break;
     case 1:
-        len=3;
-        priority=2;
-        queue[0]=Qt::Key_D;time[0]=3;
-        queue[1]=Qt::Key_S;time[1]=3;
-        queue[2]=Qt::Key_W;time[2]=3;
+        len=1;
+        priority=1;
+        queue[0]=Qt::Key_K;time[0]=0;
         break;
     case 2:
-        len=4;
-        priority=3;
-        queue[0]=Qt::Key_A;time[0]=3;
-        queue[1]=Qt::Key_D;time[1]=3;
-        queue[2]=Qt::Key_W;time[2]=3;
-        queue[3]=Qt::Key_A;time[3]=0;
+        len=1;
+        priority=1;
+        queue[0]=Qt::Key_L;time[0]=0;
         break;
     case 3:
         len=1;
         priority=1;
-        queue[0]=Qt::Key_A;time[0]=0;
+        queue[0]=Qt::Key_U;time[0]=0;
+        break;
+    case 4:
+        len=1;
+        priority=1;
+        queue[0]=Qt::Key_I;time[0]=0;
+        break;
+    case 5:
+        len=1;
+        priority=1;
+        queue[0]=Qt::Key_O;time[0]=0;
+        break;
+    //*********************priority  2*************************//
+    case 6:
+        len=3;
+        priority=2;
+        queue[0]=Qt::Key_Down;time[0]=3;
+        queue[1]=Qt::Key_Right;time[1]=3;       //↓→J
+        queue[2]=Qt::Key_J;time[2]=3;
+        break;
+    case 7:
+        len=3;
+        priority=2;
+        queue[0]=Qt::Key_Down;time[0]=3;
+        queue[1]=Qt::Key_Left;time[1]=3;        //↓←J
+        queue[2]=Qt::Key_J;time[2]=3;
+        break;
+    case 8:
+        len=3;
+        priority=2;
+        queue[0]=Qt::Key_Down;time[0]=3;
+        queue[1]=Qt::Key_Right;time[1]=3;       //↓→K
+        queue[2]=Qt::Key_K;time[2]=3;
+        break;
+    case 9:
+        len=3;
+        priority=2;
+        queue[0]=Qt::Key_Down;time[0]=3;
+        queue[1]=Qt::Key_Left;time[1]=3;        //↓←K
+        queue[2]=Qt::Key_K;time[2]=3;
+        break;
+    case 10:
+        len=3;
+        priority=2;
+        queue[0]=Qt::Key_Down;time[0]=3;
+        queue[1]=Qt::Key_Right;time[1]=3;       //↓→U
+        queue[2]=Qt::Key_U;time[2]=3;
+        break;
+    case 11:
+        len=3;
+        priority=2;
+        queue[0]=Qt::Key_Down;time[0]=3;
+        queue[1]=Qt::Key_Left;time[1]=3;        //↓←U
+        queue[2]=Qt::Key_U;time[2]=3;
+        break;
+    case 12:
+        len=3;
+        priority=2;
+        queue[0]=Qt::Key_Down;time[0]=3;
+        queue[1]=Qt::Key_Right;time[1]=3;       //↓→I
+        queue[2]=Qt::Key_I;time[2]=3;
+        break;
+    case 13:
+        len=3;
+        priority=2;
+        queue[0]=Qt::Key_Down;time[0]=3;
+        queue[1]=Qt::Key_Left;time[1]=3;        //↓←I
+        queue[2]=Qt::Key_I;time[2]=3;
+        break;
+    //*******************charactor 0**************************//
+    case 14:
+        len=4;
+        priority=3;
+        queue[0]=Qt::Key_Down;time[0]=3;
+        queue[1]=Qt::Key_Right;time[1]=3;        //↓→↑J
+        queue[2]=Qt::Key_Up;time[2]=3;
+        queue[3]=Qt::Key_J;time[3]=2;
+        break;
     }
 }
 
@@ -227,15 +318,35 @@ player::player()
 
 player::player(int id)
 {
+    //skills[used++]=skillslot();
+    int used=3;
+    skills[used+0]=skillslot(0); //basic JKLUIO
+    skills[used+1]=skillslot(1);
+    skills[used+2]=skillslot(2);
+    skills[used+3]=skillslot(3);
+    skills[used+4]=skillslot(4);
+    skills[used+5]=skillslot(5);
+    used+=6;
+    switch(id)  //basic ↓→J things
+    {
+    case 0:
+    case 1:
+        skills[used++]=skillslot(6);
+        skills[used++]=skillslot(7);
+        skills[used++]=skillslot(8);
+        skills[used++]=skillslot(9);
+        skills[used++]=skillslot(10);
+        skills[used++]=skillslot(11);
+        skills[used++]=skillslot(12);
+        skills[used++]=skillslot(13);
+    }
     switch(id)
     {
     case 0:
-        skills[0]=skillslot(0);
-        skills[1]=skillslot(2);
-        skills[2]=skillslot(3);
+        skills[used++]=skillslot(14);
         break;
     case 1:
-        skills[0]=skillslot(1);
+
         break;
     }
 }

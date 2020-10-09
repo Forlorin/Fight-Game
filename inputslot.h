@@ -17,6 +17,7 @@ public:
     int len;
     int priority;
     int timer;
+    int id;
 //public:
     void push(int);
     void clear();
@@ -27,7 +28,7 @@ public:
     skillslot(int);
 };
 
-#define skill_num 20
+#define skill_num 40
 
 class player
 {

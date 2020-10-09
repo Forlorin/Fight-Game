@@ -19,8 +19,12 @@ public:
 
     int tottime;
 
-    QLabel* La[2];
+    int inputtemp[20];
+    int skillrec[2][20];
 
+    QLabel* La[2];
+    QLabel* Lskill[2];
+    QLabel* tempslot;
     QLabel* Ltime;
 
     int timer;  
