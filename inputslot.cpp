@@ -302,9 +302,9 @@ skillslot::skillslot(int id)
         priority=2;    //hair attack
         status=1;       // attention!  in-air not equal to press up
         this->id=20;
-        queue[0]=Qt::Key_Down;time[0]=3;
-        queue[1]=Qt::Key_Right;time[1]=3;
-        queue[2]=Qt::Key_Up;time[2]=3;
+        queue[0]=Qt::Key_Left;time[0]=3;
+        queue[1]=Qt::Key_Down;time[1]=3;
+        queue[2]=Qt::Key_Right;time[2]=3;
         queue[3]=Qt::Key_U;time[3]=0;
         break;
     case 107:

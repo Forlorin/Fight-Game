@@ -30,11 +30,16 @@ public:
     int inputtemp[20];
     int skillrec[2][20];
 
+    int ndx,ndy;
+
     QLabel* cha[2][2];
 
     QPushButton* nextact;
     QPushButton* actit;
     QPushButton* ctime;
+    QPushButton* cx[2];
+    QPushButton* cy[2];
+    QPushButton* pbut;
 
     QLabel* La[2];
     QLabel* Lskill[2];
@@ -58,7 +63,9 @@ private:
 public slots:
     void changeact();
     void changetime();
+    void changexy(int, int);
     void act();
+    void pac();
 };
 
 #endif // WIDGET_H

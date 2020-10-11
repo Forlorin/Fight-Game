@@ -103,6 +103,20 @@ Hitbox::Hitbox(int cha,int ski,int fri,bool hasimg)
     if(!hasimg)
         img="";
 
+
+    int num200[8]={0,10,30,30,30,25,25,20};
+    int num230[11]={5,5,7,7,0,-5,18,22,5,5,0};
+    int num220[15]={0,0,0,7,10,15,30,33,35,33,35,15,10,10,0};
+    int num210[13]={0,3,0,-3,-10,-17,13,16,7,7,5,5,7};
+    int num240[8]={0,10,10,20,20,20,23,25};
+    int num400[6]={0,10,20,15,3,0};
+    int num420[8]={3,12,20,25,26,19,17,5};
+    int num943[8]={0,-1,-2,-3,-4,12,12,12};
+    int num1000[9]={3,-2,-3,-3,-1,4,2,0,0};
+    int num1010[2][19]={
+        {78,70,51,35,29,27,27,27,27,21,21,21,21,21,21,21,21,21,21},
+        {33,44,63,76,81,81,81,81,81,92,92,92,92,92,92,92,92,92,92}
+    };
     switch(cha)
     {
     case 0:     //Aura
@@ -117,8 +131,35 @@ Hitbox::Hitbox(int cha,int ski,int fri,bool hasimg)
             }
             break;
         case 200:
-            int num[8]={0,10,40,40,40,40,40,40};
-            dx+=num[fri];
+            dx+=num200[fri];
+            break;
+        case 230:
+            dx+=num230[fri];
+            break;
+        case 220:
+            dx+=num220[fri];
+            break;
+        case 210:
+            dx+=num210[fri];
+            break;
+        case 240:
+            dx+=num240[fri];
+            break;
+        case 400:
+            dx+=num400[fri];
+            break;
+        case 420:
+            dx+=num420[fri];
+            break;
+        case 943:
+            dx+=num943[fri];
+            break;
+        case 1000:
+            dx+=num1000[fri];
+            break;
+        case 1010:
+            dy+=num1010[0][fri];
+            dx+=num1010[1][fri];
             break;
         }
         break;
@@ -293,9 +334,9 @@ Action::Action(int cha, int ski)
             ski=200;
             break;
         case 14:        //kick
-            len=13;
+            len=11;
             loop=len;
-            ski=210;
+            ski=230;
             break;
         case 15:        //heavy punch
             len=15;
@@ -303,9 +344,9 @@ Action::Action(int cha, int ski)
             ski=220;
             break;
         case 16:        //heavy kick
-            len=11;
+            len=13;
             loop=len;
-            ski=230;
+            ski=210;
             break;
         case 17:        //upper kick
             len=8;
@@ -327,6 +368,7 @@ Action::Action(int cha, int ski)
             len=8;
             loop=len;
             ski=420;
+            next=3;
             break;
         case 21:        //ice fly
             len=8;
@@ -570,8 +612,6 @@ Character::Character(int id)
         break;
     }
 }
-
-
 
 
 

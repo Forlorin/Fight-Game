@@ -7,8 +7,35 @@ Widget::Widget(QWidget *parent) :
     ui(new Ui::Widget)
 {
 
-    nact=13;
-    frime=1;
+    nact=22;
+    frime=3;
+    ndx=0;
+    ndy=0;
+
+    timer=-1;
+
+    pbut=new QPushButton(this);
+    pbut->setGeometry(860,600,100,50);
+    pbut->setText("pause");
+    connect(pbut,SIGNAL(pressed()),this,SLOT(pac()));
+
+    cx[0]=new QPushButton(this);
+    cx[1]=new QPushButton(this);
+    cy[0]=new QPushButton(this);
+    cy[1]=new QPushButton(this);
+    connect(cx[0],&QPushButton::pressed,this,[=](){changexy(-1,0);});
+    connect(cx[1],&QPushButton::pressed,this,[=](){changexy(1,0);});
+    connect(cy[0],&QPushButton::pressed,this,[=](){changexy(0,-1);});
+    connect(cy[1],&QPushButton::pressed,this,[=](){changexy(0,1);});
+
+    cx[0]->setGeometry(860,720,50,50);
+    cx[0]->setText("x-");
+    cx[1]->setGeometry(860,660,50,50);
+    cx[1]->setText("x+");
+    cy[0]->setGeometry(920,720,50,50);
+    cy[0]->setText("y-");
+    cy[1]->setGeometry(920,660,50,50);
+    cy[1]->setText("y+");
 
     nextact=new QPushButton(this);
     nextact->setGeometry(750,600,100,50);
@@ -24,7 +51,7 @@ Widget::Widget(QWidget *parent) :
 
     ctime=new QPushButton(this);
     ctime->setGeometry(750,720,100,50);
-    ctime->setText("30");
+    ctime->setText(QString::number(frime));
     connect(ctime,SIGNAL(pressed()),this,SLOT(changetime()));
     ctime->show();
 
@@ -54,7 +81,7 @@ Widget::Widget(QWidget *parent) :
 
     this->setFixedSize(1000,1000);
     ui->setupUi(this);
-    timer=startTimer(1000/frime);
+    //timer=startTimer(1000/frime);
 
     La[0]=new QLabel(this);
     La[0]->setGeometry(0,0,500,500);
@@ -262,7 +289,7 @@ void Widget::viewupdate()
 
     nhit=fight->player[0].get_atabox();
     nhit.get(dx,dy,dw,dh,timg);
-    cha[0][1]->setGeometry(500+dx,650-dy,dw,dh);
+    cha[0][1]->setGeometry(500+dx+ndx,650-dy+ndy,dw,dh);
     cha[0][1]->setStyleSheet("QLabel{border-image: url("+timg+")}");
     qDebug()<<timg;
     cha[0][1]->show();
@@ -291,7 +318,28 @@ void Widget::changetime()
     ctime->setText(QString::number(frime));
 }
 
+void Widget::changexy(int a, int b)
+{
+    ndx+=a;
+    ndy+=b;
+    pbut->setText(QString::number(ndx)+" "+QString::number(ndy));
+    viewupdate();
+}
+
 void Widget::act()
 {
     fight->player[0].do_act(nact,-10);
+}
+
+void Widget::pac()
+{
+    //timerEvent(nullptr);
+    if(timer!=-1)
+    {
+        killTimer(timer);
+    }
+    else
+    {
+        timer=startTimer(1000/frime);
+    }
 }
