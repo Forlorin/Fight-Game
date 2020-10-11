@@ -40,10 +40,10 @@ void inputslot::update()
     pl[1].update();
 }
 
-void inputslot::getSt(int &a, int &b, int s)
+void inputslot::getSt(int &a, int &b, int &pa, int &pb,int s0,int s1)
 {
-    a=pl[0].Act(s);
-    b=pl[1].Act(s);
+    pl[0].Act(s0,a,pa);
+    pl[1].Act(s1,b,pb);
 }
 
 int inputslot::trans(int id,bool face)
@@ -133,6 +133,11 @@ void skillslot::update()
         flag=0;
     if(timer!=0)
         --timer;
+}
+
+int skillslot::get_id()
+{
+    return id;
 }
 
 bool skillslot::isAct(int s)
@@ -354,7 +359,7 @@ void player::push(int key)
     }
 }
 
-int player::Act(int stat)
+void player::Act(int stat,int &id,int &pri)
 {
     int nact=-1,npri=-10;
     for(int i=0;i<skill_num;i++)
@@ -375,7 +380,8 @@ int player::Act(int stat)
                 skills[i].clear();
         }
     }
-    return skills[nact].id;
+    id=skills[nact].id;
+    pri=npri;
 }
 
 void player::update()

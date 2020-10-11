@@ -7,6 +7,27 @@ Widget::Widget(QWidget *parent) :
     ui(new Ui::Widget)
 {
 
+    nact=13;
+    frime=1;
+
+    nextact=new QPushButton(this);
+    nextact->setGeometry(750,600,100,50);
+    nextact->setText("next");
+    connect(nextact,SIGNAL(pressed()),this,SLOT(changeact()));
+    nextact->show();
+
+    actit=new QPushButton(this);
+    actit->setGeometry(750,660,100,50);
+    actit->setText("act");
+    connect(actit,SIGNAL(pressed()),this,SLOT(act()));
+    actit->show();
+
+    ctime=new QPushButton(this);
+    ctime->setGeometry(750,720,100,50);
+    ctime->setText("30");
+    connect(ctime,SIGNAL(pressed()),this,SLOT(changetime()));
+    ctime->show();
+
     fight=new FightObject(500,250,0,0);
 
     for(int i=0;i<2;i++)
@@ -14,6 +35,8 @@ Widget::Widget(QWidget *parent) :
         for(int j=0;j<2;j++)
         {
             cha[i][j]=new QLabel(this);
+            cha[i][j]->setGeometry(500,650,0,0);
+            cha[i][j]->show();
         }
     }
 
@@ -31,14 +54,14 @@ Widget::Widget(QWidget *parent) :
 
     this->setFixedSize(1000,1000);
     ui->setupUi(this);
-    timer=startTimer(1000/30);
+    timer=startTimer(1000/frime);
 
     La[0]=new QLabel(this);
-    La[0]->setGeometry(0,0,1000,500);
+    La[0]->setGeometry(0,0,500,500);
     La[0]->setText("Hello La");
 
     La[1]=new QLabel(this);
-    La[1]->setGeometry(0,500,1000,500);
+    La[1]->setGeometry(0,500,500,500);
     La[1]->setText("Hello Lb");
 
     Lskill[0]=new QLabel(this);
@@ -62,6 +85,7 @@ Widget::Widget(QWidget *parent) :
 void Widget::timerEvent(QTimerEvent *)
 {
     input.update();
+    fight->player[0].update();
     viewupdate();
     Ltime->setText(QString::number(tottime++));
 }
@@ -196,19 +220,21 @@ void Widget::viewupdate()
         }
 
         str+="Now Acting: ";
-        str+=QString::number(np->Act(1));
+        int tid,tpri;
+        np->Act(1,tid,tpri);
+        str+=QString::number(tid);
         str+="\n";
 
         La[i]->setText(str);
 
-        if(np->Act(1)!=0)
+        if(tid!=0)
         {
             str="player #"+QString::number(i)+":";
             for(int j=0;j<19;j++)
             {
                 skillrec[i][j]=skillrec[i][j+1];
             }
-            skillrec[i][19]=np->Act(1);
+            skillrec[i][19]=tid;
 
             for(int j=0;j<20;j++)
             {
@@ -218,9 +244,54 @@ void Widget::viewupdate()
             Lskill[i]->setText(str);
         }
     }
+
+    cha[0][0]->hide();
+    cha[0][0]->hide();
+
+    qDebug()<<fight->player[0].act_doing<<' '<<fight->player[0].act_timer;
+
+    Hitbox nhit;
+    nhit=fight->player[0].get_hitbox();
+    int dx,dy,dw,dh;
+    QString timg;
+    nhit.get(dx,dy,dw,dh,timg);
+    cha[0][0]->setGeometry(500+dx,650-dy,dw,dh);
+    cha[0][0]->setStyleSheet("QLabel{border-image: url("+timg+")}");
+    qDebug()<<timg;
+    cha[0][0]->show();
+
+    nhit=fight->player[0].get_atabox();
+    nhit.get(dx,dy,dw,dh,timg);
+    cha[0][1]->setGeometry(500+dx,650-dy,dw,dh);
+    cha[0][1]->setStyleSheet("QLabel{border-image: url("+timg+")}");
+    qDebug()<<timg;
+    cha[0][1]->show();
 }
 
 Widget::~Widget()
 {
     delete ui;
+}
+
+void Widget::changeact()
+{
+    nact+=1;
+    if(nact==24)
+        nact=0;
+    nextact->setText(QString::number(nact));
+}
+
+void Widget::changetime()
+{
+    killTimer(timer);
+    frime/=2;
+    if(frime==0)
+        frime=30;
+    timer=startTimer(1000/frime);
+    ctime->setText(QString::number(frime));
+}
+
+void Widget::act()
+{
+    fight->player[0].do_act(nact,-10);
 }

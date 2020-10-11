@@ -11,7 +11,7 @@ class skillslot
 {
 public:
     bool empty;
-    int status;         //0 any  1 stand  2 in-air  3  squat   4  right   5   left
+    int status;         //0 any  1 stand  2 in-air  3  squat   4  forward  5   backward
     int queue[skill_len];
     int time[skill_len];
     int flag;
@@ -23,6 +23,7 @@ public:
     void push(int);
     void clear();
     void update();
+    int get_id();
     bool isAct(int stat);
     int getPri();
     skillslot();
@@ -37,7 +38,7 @@ public:
     skillslot skills[skill_num];
 //public:
     void push(int);
-    int Act(int stat);
+    void Act(int stat, int &id, int &pri);
     void update();
     player();
     player(int);
@@ -48,9 +49,11 @@ class inputslot
 public:
     player pl[2];
 //public:
-    void push(int, bool);
-    void update();
-    void getSt(int&,int&,int);
+    void push(int, bool);//int: key   bool:  player0 is left?
+    void update();          //every frame need to be used
+    void getSt(int &a, int &b, int &pa, int &pb, int s0, int s1);
+                        //player0 id  pri   player1  id pri
+                        //status 0            status 1
 
     static int trans(int, bool);
 

@@ -18,7 +18,7 @@ public:
     void get(int& x, int& y, int& w, int& h, QString &timg);
 
     Hitbox();
-    Hitbox(int cha, int ski, int fri);
+    Hitbox(int cha, int ski, int fri,bool hasimg);
 };
 
 #define ActionFrame 50
@@ -61,20 +61,21 @@ class Character
     int status;
     int hittype;
     bool in_air;
-
+public:
     int act_doing;
     int act_pri;
     int act_timer;
 
     Action acts[actnum];
 
-public:
+//public:
 
     int get_health();
     int get_status();
+
     Hitbox get_hitbox();
-    QString get_img();
     Hitbox get_atabox();
+    int get_damage();
 
     void set_health(int);
     void set_status(int);
@@ -126,7 +127,7 @@ public:
 
     void flydelete(FlyObject*);
     void flyupdate();
-    void flyadd(int x, int y, int id,bool right);
+    void flyadd(int x, int y, int id,bool isright);
 
     FightObject(int,int,int,int);//w h player1 player2
 };

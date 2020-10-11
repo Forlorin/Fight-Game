@@ -54,10 +54,10 @@ void FightObject::flyadd(int x, int y, int id,bool right)
 
 FightObject::FightObject(int a,int b,int c,int d)
 {
-    w=c;
-    h=d;
-    player[0]=Character(a);
-    player[1]=Character(b);
+    w=a;
+    h=b;
+    player[0]=Character(c);
+    player[1]=Character(d);
     flyhead=nullptr;
 }
 
@@ -78,7 +78,7 @@ Hitbox::Hitbox()
     h=0;
 }
 
-Hitbox::Hitbox(int cha,int ski,int fri)
+Hitbox::Hitbox(int cha,int ski,int fri,bool hasimg)
 {
     if(cha==-1)
     {
@@ -99,6 +99,30 @@ Hitbox::Hitbox(int cha,int ski,int fri)
     dx=-imgs.width()/2;
     h=dy=imgs.height();
     w=imgs.width();
+
+    if(!hasimg)
+        img="";
+
+    switch(cha)
+    {
+    case 0:     //Aura
+        switch(ski)
+        {
+        case 5000:
+            switch(fri)
+            {
+            case 30:
+                dx-=6;
+                break;
+            }
+            break;
+        case 200:
+            int num[8]={0,10,40,40,40,40,40,40};
+            dx+=num[fri];
+            break;
+        }
+        break;
+    }
 
     qDebug()<<img<<' '<<dx<<' '<<dy<<' '<<w<<' '<<h;
 }
@@ -170,6 +194,7 @@ Action::Action()
 
 Action::Action(int cha, int ski)
 {
+    qDebug()<<"Build "<<QString::number(ski);
     aironly=0;
     jump=0;
     move=0;
@@ -185,7 +210,7 @@ Action::Action(int cha, int ski)
         switch(ski)
         {
         case 0:         //start
-            len=3;
+            len=5;
             loop=len;
             next=1;
             ski=0;
@@ -218,9 +243,16 @@ Action::Action(int cha, int ski)
             ski=21;
             break;
         case 6:         //jump
-            len=8;
+            len=7;
+            loop=len;
+            ski=41;
+            next=24;
+            break;
+        case 24:         //falling
+            len=1;
             loop=-len;
             ski=41;
+            st=7;
             break;
         case 7:         //dash forward
             len=8;
@@ -229,7 +261,7 @@ Action::Action(int cha, int ski)
             move=1.5;
             break;
         case 8:         //dash backward
-            len=2;
+            len=4;
             loop=len;
             ski=105;
             move=2;
@@ -277,7 +309,8 @@ Action::Action(int cha, int ski)
             break;
         case 17:        //upper kick
             len=8;
-            ski=240;    //special
+            loop=len;
+            ski=240;
             break;
         case 18:        //squat kick
             len=6;
@@ -288,7 +321,7 @@ Action::Action(int cha, int ski)
             len=7;
             loop=len;
             ski=410;
-            next=11;
+            next=3;
             break;
         case 20:        //hair attack
             len=8;
@@ -310,43 +343,114 @@ Action::Action(int cha, int ski)
             len=9;      //special
             loop=len;
             ski=1500;
-            next=3;
+            next=1;
             break;
         }
         for(int i=st;i<st+len;i++)
         {
             damage[i]=tdam;
-            hits[i]=Hitbox(0,ski,i);
-            body[i]=Hitbox(0,ski,i);
+            qDebug()<<QString::number(i)<<":";
+            hits[i-st]=Hitbox(0,ski,i,0);
+            body[i-st]=Hitbox(0,ski,i,1);
             hitstime[i]=1;
         }
         switch(ski) //special deal
         {
         default:
             break;
-        case 240:       //upper kick
-            loop=16;
-            for(int i=0;i<8;i++)
+        case 11:
+            loop=-32;
+            for(int i=8;i<-loop;i++)
             {
-                hits[i+8]=Hitbox(0,ski,7-i);
-                body[i+8]=Hitbox(0,ski,7-i);
+                body[i]=Hitbox(0,ski,15-i,1);
+            }
+            for(int i=0;i<-loop;i++)
+            {
+                hitstime[i]=2;
+            }
+            break;
+        case 20:
+            loop=2*loop;
+            for(int i=0;i<-loop;i++)
+            {
+                hitstime[i]=2;
+            }
+            break;
+        case 21:
+            loop=2*loop;
+            for(int i=0;i<-loop;i++)
+            {
+                hitstime[i]=2;
+            }
+            break;
+        case 24:
+            loop=3*loop;
+            for(int i=0;i<loop;i++)
+            {
+                hitstime[i]=3;
+            }
+            break;
+        case 105:
+            hitstime[1]=8;
+            break;
+        case 5000:
+            loop+=3;
+            for(int i=0;i<4;i++)
+            {
+                body[i]=Hitbox(0,ski,10*i,1);
+            }
+            hitstime[3]=4;
+            break;
+        case 5100:
+            loop=2*loop;
+            for(int i=0;i<loop;i++)
+            {
+                hitstime[i]=2;
+            }
+            break;
+        case 5120:
+            loop=2*loop;
+            for(int i=0;i<loop;i++)
+            {
+                hitstime[i]=2;
+            }
+            break;
+        case 400:
+            loop=2*loop;
+            for(int i=0;i<loop;i++)
+            {
+                hitstime[i]=2;
+            }
+            break;
+        case 410:
+            loop=2*loop;
+            for(int i=0;i<loop;i++)
+            {
+                hitstime[i]=2;
+            }
+            break;
+        case 420:
+            loop=loop+1;
+            for(int i=0;i<1;i++)
+            {
+                hitstime[i]=2;
             }
             break;
         case 1000:
             loop=19;
             for(int i=10;i<loop;i++)
             {
-                body[i]=Hitbox(0,ski,9);
+                body[i]=Hitbox(0,ski,9,1);
             }
             for(int i=0;i<loop;i++)
             {
-                hits[i]=Hitbox(0,1010,i);
+                hits[i]=Hitbox(0,1010,i,1);
             }
             break;
         case 1500:
             for(int i=0;i<loop;i++)
             {
-                hits[i]=Hitbox(0,1510,i);
+                hits[i]=Hitbox(0,1510,i,1);
             }
         }
         break;
@@ -375,6 +479,11 @@ Hitbox Character::get_hitbox()
 Hitbox Character::get_atabox()
 {
     return acts[act_doing].get_hitbox(act_timer);
+}
+
+int Character::get_damage()
+{
+    return acts[act_doing].get_damage(act_timer);
 }
 
 
@@ -415,12 +524,12 @@ void Character::update()
         if(act_timer==st)
         {
             status=0;
-            if(!do_act(nact->get_next(),-1))
+            if(do_act(nact->get_next(),-1))
                  return;
-            else if(!do_act(1,-1))
+            else if(do_act(1,-1))
                  return;                // 1 stand
             else
-                  do_act(2,-1);         // 2 jump
+                  do_act(24,-1);         // 24 falling
             return;
         }
         act_timer++;
@@ -454,7 +563,7 @@ Character::Character(int id)
     switch(id)
     {
     case 0: //Aura
-        for(int i=0;i<10;i++)
+        for(int i=0;i<25;i++)
         {
             acts[i]=Action(0,i);
         }

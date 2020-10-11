@@ -5,6 +5,7 @@
 #include <QString>
 #include <inputslot.h>
 #include <QDebug>
+#include <QPushButton>
 #include <QLabel>
 #include <fightobject.h>
 
@@ -16,6 +17,11 @@ class Widget : public QWidget
 {
     Q_OBJECT
 public:
+
+    int nact;
+    int nstat;
+    int frime;
+
     FightObject* fight;
     inputslot input;
 
@@ -25,6 +31,10 @@ public:
     int skillrec[2][20];
 
     QLabel* cha[2][2];
+
+    QPushButton* nextact;
+    QPushButton* actit;
+    QPushButton* ctime;
 
     QLabel* La[2];
     QLabel* Lskill[2];
@@ -45,6 +55,10 @@ public:
 
 private:
     Ui::Widget *ui;
+public slots:
+    void changeact();
+    void changetime();
+    void act();
 };
 
 #endif // WIDGET_H
