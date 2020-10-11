@@ -297,7 +297,7 @@ Action::Action(int cha, int ski)
             break;
         case 7:         //dash forward
             len=8;
-            loop=-len;
+            loop=len;
             ski=100;
             move=1.5;
             break;
@@ -515,6 +515,7 @@ int Character::get_status()
 
 Hitbox Character::get_hitbox()
 {
+    qDebug()<<act_doing<<' '<<act_pri;
     return acts[act_doing].get_body(act_timer);
 }
 
@@ -542,13 +543,30 @@ void Character::set_status(int s)
 
 bool Character::do_act(int id,int pri)
 {
-    if(status==0&&acts[id].isAirOnly()==in_air&&(pri>act_pri||pri<0))
+    if(id<0||id>actnum)
+        return false;
+    if(id==4&&act_doing==1)
     {
+        id=4;
+    }
+    if(status==0)
+    {
+        if(!acts[id].isAirOnly()==in_air)
+             return false;
+        if(!(pri>act_pri||(pri<-1&&act_pri>0)||(id<=5&&act_doing<=5&&id!=act_doing)))
+            return false;
+        if(id==0&&act_doing==1)
+            return false;
+        if(id==2&&act_doing==3)
+            return false;
+        qDebug()<<id<<" succeed";
         act_doing=id;
         act_pri=pri;
         act_timer=0;
+
         return true;
     }
+    qDebug()<<id<<" fail";
     return false;
 }
 
@@ -566,6 +584,7 @@ void Character::update()
         if(act_timer==st)
         {
             status=0;
+            act_pri=-2;
             if(do_act(nact->get_next(),-1))
                  return;
             else if(do_act(1,-1))

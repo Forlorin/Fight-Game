@@ -25,6 +25,7 @@ public:
 
 class Action
 {
+    friend class Character;
     bool aironly;
     bool jump;
     float move;

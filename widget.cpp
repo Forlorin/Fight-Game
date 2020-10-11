@@ -8,11 +8,21 @@ Widget::Widget(QWidget *parent) :
 {
 
     nact=22;
-    frime=3;
+    frime=30;
     ndx=0;
     ndy=0;
+    hasK=0;
+
+    nstat=1;
+
+    cstat=new QPushButton(this);
+    cstat->setGeometry(860,800,100,50);
+    cstat->setText(QString::number(nstat));
+    connect(cstat,SIGNAL(pressed()),this,SLOT(changestat()));
+    cstat->show();
 
     timer=-1;
+    timer=startTimer(1000/frime);
 
     pbut=new QPushButton(this);
     pbut->setGeometry(860,600,100,50);
@@ -81,7 +91,6 @@ Widget::Widget(QWidget *parent) :
 
     this->setFixedSize(1000,1000);
     ui->setupUi(this);
-    //timer=startTimer(1000/frime);
 
     La[0]=new QLabel(this);
     La[0]->setGeometry(0,0,500,500);
@@ -111,10 +120,22 @@ Widget::Widget(QWidget *parent) :
 
 void Widget::timerEvent(QTimerEvent *)
 {
+    if(hasK)
+    {
+        hasK=0;
+    }
+    else
+    {
+        hasK=0;
+    }
+    viewupdate();
+    int st0,st1,p1,p2;
+    input.getSt(st0,st1,p1,p2,nstat,nstat);
+    fight->player[0].do_act(st0,p1);
+    //viewupdate();
+    Ltime->setText(QString::number(tottime++));
     input.update();
     fight->player[0].update();
-    viewupdate();
-    Ltime->setText(QString::number(tottime++));
 }
 
 void Widget::keyPressEvent(QKeyEvent *keyevent)
@@ -122,6 +143,8 @@ void Widget::keyPressEvent(QKeyEvent *keyevent)
     int key=keyevent->key();
     if(!keyevent->isAutoRepeat())
         input.push(key,1);
+
+    hasK=1;
 
     for(int i=0;i<19;i++)
     {
@@ -236,7 +259,7 @@ void Widget::viewupdate()
                     str+=" ";
             }
 
-            if(ns->isAct(1))
+            if(ns->isAct(nstat))
                 str+=" Acting!",hasA=1;
             str+="\n";
         }
@@ -246,36 +269,36 @@ void Widget::viewupdate()
             str+="";
         }
 
-        str+="Now Acting: ";
-        int tid,tpri;
-        np->Act(1,tid,tpri);
-        str+=QString::number(tid);
-        str+="\n";
+//        str+="Now Acting: ";
+//        int tid,tpri;
+//        np->Act(nstat,tid,tpri);
+//        str+=QString::number(tid);
+//        str+="\n";
 
         La[i]->setText(str);
 
-        if(tid!=0)
-        {
-            str="player #"+QString::number(i)+":";
-            for(int j=0;j<19;j++)
-            {
-                skillrec[i][j]=skillrec[i][j+1];
-            }
-            skillrec[i][19]=tid;
+//        if(tid!=0)
+//        {
+//            str="player #"+QString::number(i)+":";
+//            for(int j=0;j<19;j++)
+//            {
+//                skillrec[i][j]=skillrec[i][j+1];
+//            }
+//            skillrec[i][19]=tid;
 
-            for(int j=0;j<20;j++)
-            {
-                str+=QString::number(skillrec[i][j])+" ";
-            }
+//            for(int j=0;j<20;j++)
+//            {
+//                str+=QString::number(skillrec[i][j])+" ";
+//            }
 
-            Lskill[i]->setText(str);
-        }
+//            Lskill[i]->setText(str);
+//        }
     }
 
     cha[0][0]->hide();
     cha[0][0]->hide();
 
-    qDebug()<<fight->player[0].act_doing<<' '<<fight->player[0].act_timer;
+    //qDebug()<<fight->player[0].act_doing<<' '<<fight->player[0].act_timer;
 
     Hitbox nhit;
     nhit=fight->player[0].get_hitbox();
@@ -284,14 +307,14 @@ void Widget::viewupdate()
     nhit.get(dx,dy,dw,dh,timg);
     cha[0][0]->setGeometry(500+dx,650-dy,dw,dh);
     cha[0][0]->setStyleSheet("QLabel{border-image: url("+timg+")}");
-    qDebug()<<timg;
+    //qDebug()<<timg;
     cha[0][0]->show();
 
     nhit=fight->player[0].get_atabox();
     nhit.get(dx,dy,dw,dh,timg);
     cha[0][1]->setGeometry(500+dx+ndx,650-dy+ndy,dw,dh);
     cha[0][1]->setStyleSheet("QLabel{border-image: url("+timg+")}");
-    qDebug()<<timg;
+    //qDebug()<<timg;
     cha[0][1]->show();
 }
 
@@ -318,6 +341,14 @@ void Widget::changetime()
     ctime->setText(QString::number(frime));
 }
 
+void Widget::changestat()
+{
+    nstat+=1;
+    if(nstat==6)
+        nstat=1;
+    cstat->setText(QString::number(nstat));
+}
+
 void Widget::changexy(int a, int b)
 {
     ndx+=a;
@@ -337,6 +368,7 @@ void Widget::pac()
     if(timer!=-1)
     {
         killTimer(timer);
+        timer=-1;
     }
     else
     {

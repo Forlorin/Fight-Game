@@ -142,7 +142,7 @@ int skillslot::get_id()
 
 bool skillslot::isAct(int s)
 {
-    if(flag==len&&timer==0&&(status==0||s==status))
+    if(flag==len&&timer==0&&(status==0||s==0||s==status))
         return true;
     return false;
 }
@@ -179,13 +179,13 @@ skillslot::skillslot(int id)
     {
     case 0:
         len=0;          //stand
-        priority=-2;
+        priority=-1;
         status=1;
         this->id=0;
         break;
     case 1:
         len=0;          //squat
-        priority=-2;
+        priority=-1;
         status=3;
         this->id=2;
         break;
@@ -366,6 +366,7 @@ void player::Act(int stat,int &id,int &pri)
     {
         if(skills[i].empty)
             continue;
+        skillslot* tslot=&skills[i];
         if(skills[i].isAct(stat)&&skills[i].getPri()>npri)
         {
             nact=i;
@@ -374,21 +375,29 @@ void player::Act(int stat,int &id,int &pri)
     }
     if(nact!=-1)
     {
-        for(int i=0;i<skill_num;i++)
+        if(nact>4)
         {
-            if(i!=nact&&npri>skills[i].getPri())
-                skills[i].clear();
+            for(int i=0;i<skill_num;i++)
+            {
+                if(i!=nact&&npri>skills[i].getPri())
+                    skills[i].clear();
+            }
         }
+        id=skills[nact].get_id();
+        pri=npri;
     }
-    id=skills[nact].id;
-    pri=npri;
+    else
+    {
+        id=-1;
+        pri=-1;
+    }
 }
 
 void player::update()
 {
     for(int i=0;i<skill_num;i++)
     {
-        if(skills[i].getPri()<=0)
+        if(skills[i].empty)
             continue;
         skills[i].update();
     }

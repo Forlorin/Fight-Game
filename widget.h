@@ -22,6 +22,8 @@ public:
     int nstat;
     int frime;
 
+    bool hasK;
+
     FightObject* fight;
     inputslot input;
 
@@ -34,6 +36,7 @@ public:
 
     QLabel* cha[2][2];
 
+    QPushButton* cstat;
     QPushButton* nextact;
     QPushButton* actit;
     QPushButton* ctime;
@@ -63,6 +66,7 @@ private:
 public slots:
     void changeact();
     void changetime();
+    void changestat();
     void changexy(int, int);
     void act();
     void pac();
