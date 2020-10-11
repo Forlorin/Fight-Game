@@ -13,37 +13,47 @@ class Hitbox
 {
     int dx,dy;
     int w,h;
+    QString img;
 public:
-    void get(int& x,int& y,int& w,int& h);
+    void get(int& x, int& y, int& w, int& h, QString &timg);
 
     Hitbox();
-    Hitbox(int x,int y,int w,int h);
+    Hitbox(int cha, int ski, int fri);
 };
 
 #define ActionFrame 50
 
 class Action
 {
-    int hittype;
     bool aironly;
-    int damage;
+    bool jump;
+    float move;
+    int fly;
+
     int loop;
-    QString img[ActionFrame];
+    int next;
+
+    int damage[ActionFrame];
     Hitbox hits[ActionFrame];
+    Hitbox body[ActionFrame];
     short hitstime[ActionFrame];
-public:
+
+public:  
     bool isAirOnly();
+    bool isJump();
+    int get_move();
+
     int start();
-    int get_damage();
-    int get_hittype();
-    QString get_img(int);
-    Hitbox get_hitbox(int);
+    int get_next();
+    int get_damage(int time);
+    Hitbox get_hitbox(int time);
+    Hitbox get_body(int time);
 
     Action();
-    Action(int);
+    Action(int,int);
 };
 
-#define actnum 20
+#define actnum 40
 
 class Character
 {
@@ -51,12 +61,15 @@ class Character
     int status;
     int hittype;
     bool in_air;
-    Action acts[actnum];
+
     int act_doing;
     int act_pri;
     int act_timer;
-    Hitbox hit[2];
+
+    Action acts[actnum];
+
 public:
+
     int get_health();
     int get_status();
     Hitbox get_hitbox();
@@ -65,8 +78,8 @@ public:
 
     void set_health(int);
     void set_status(int);
-    bool do_act(int id,int pri);
     void set_in_air(bool);
+    bool do_act(int id,int pri);
 
     void update();
 
@@ -74,25 +87,39 @@ public:
     Character(int);
 };
 
+#define Fly_frame 10
+
 class FlyObject
 {
     friend class FightObject;
 
-    QString img;
     int damage;
+    bool disap;
     int x,y;
     int v_x,v_y;
-    Hitbox hit;
+
+    int loop;
+    int timer;
+
+    Hitbox hit[Fly_frame];
 public:
     FlyObject* pre;
     FlyObject* next;
+
+    void get_xy(int &x,int &y);
+    Hitbox get_hit();
+    bool isDis();
+
+    void update();
 
     FlyObject(int x, int y, int id, bool right);
 };
 
 class FightObject
 {
+
     int w,h;
+
 public:
     Character player[2];
     FlyObject* flyhead;
@@ -101,7 +128,7 @@ public:
     void flyupdate();
     void flyadd(int x, int y, int id,bool right);
 
-    FightObject(int,int,int,int);
+    FightObject(int,int,int,int);//w h player1 player2
 };
 
 #endif // FIGHTOBJECT_H

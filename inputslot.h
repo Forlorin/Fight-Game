@@ -11,6 +11,7 @@ class skillslot
 {
 public:
     bool empty;
+    int status;
     int queue[skill_len];
     int time[skill_len];
     int flag;
@@ -22,7 +23,7 @@ public:
     void push(int);
     void clear();
     void update();
-    bool isAct();
+    bool isAct(int stat);
     int getPri();
     skillslot();
     skillslot(int);
@@ -36,7 +37,7 @@ public:
     skillslot skills[skill_num];
 //public:
     void push(int);
-    int Act();
+    int Act(int stat);
     void update();
     player();
     player(int);
@@ -49,7 +50,7 @@ public:
 //public:
     void push(int, bool);
     void update();
-    void getSt(int&,int&);
+    void getSt(int&,int&,int);
 
     static int trans(int, bool);
 

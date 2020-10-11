@@ -6,6 +6,17 @@ Widget::Widget(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::Widget)
 {
+
+    fight=new FightObject(500,250,0,0);
+
+    for(int i=0;i<2;i++)
+    {
+        for(int j=0;j<2;j++)
+        {
+            cha[i][j]=new QLabel(this);
+        }
+    }
+
     tottime=0;
     for(int i=0;i<20;i++)
     {
@@ -162,7 +173,7 @@ void Widget::viewupdate()
                     str+=" ";
             }
 
-            if(ns->isAct())
+            if(ns->isAct(0))
                 str+=" Acting!",hasA=1;
             str+="\n";
         }
@@ -173,19 +184,19 @@ void Widget::viewupdate()
         }
 
         str+="Now Acting: ";
-        str+=QString::number(np->Act());
+        str+=QString::number(np->Act(0));
         str+="\n";
 
         La[i]->setText(str);
 
-        if(np->Act()!=-1)
+        if(np->Act(0)!=-1)
         {
             str="player #"+QString::number(i)+":";
             for(int j=0;j<19;j++)
             {
                 skillrec[i][j]=skillrec[i][j+1];
             }
-            skillrec[i][19]=np->Act();
+            skillrec[i][19]=np->Act(0);
 
             for(int j=0;j<20;j++)
             {

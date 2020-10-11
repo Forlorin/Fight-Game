@@ -40,10 +40,10 @@ void inputslot::update()
     pl[1].update();
 }
 
-void inputslot::getSt(int &a, int &b)
+void inputslot::getSt(int &a, int &b, int s)
 {
-    a=pl[0].Act();
-    b=pl[1].Act();
+    a=pl[0].Act(s);
+    b=pl[1].Act(s);
 }
 
 int inputslot::trans(int id,bool face)
@@ -135,9 +135,9 @@ void skillslot::update()
         --timer;
 }
 
-bool skillslot::isAct()
+bool skillslot::isAct(int s)
 {
-    if(flag==len&&timer==0)
+    if(flag==len&&timer==0&&(status==0||s==status))
         return true;
     return false;
 }
@@ -170,6 +170,7 @@ skillslot::skillslot(int id)
     empty=0;
     timer=0;
     flag=0;
+    status=0;
     switch(id)
     {
     case 0:
@@ -259,7 +260,7 @@ skillslot::skillslot(int id)
         queue[1]=Qt::Key_Left;time[1]=3;        //↓←I
         queue[2]=Qt::Key_I;time[2]=3;
         break;
-    //*******************charactor 0**************************//
+    //*******************Aura start**************************//
     case 14:
         len=4;
         priority=3;
@@ -279,12 +280,12 @@ void player::push(int key)
     }
 }
 
-int player::Act()
+int player::Act(int stat)
 {
     int nact=-1,npri=0;
     for(int i=0;i<skill_num;i++)
     {
-        if(skills[i].isAct()&&skills[i].getPri()>npri)
+        if(skills[i].isAct(stat)&&skills[i].getPri()>npri)
         {
             nact=i;
             npri=skills[i].getPri();
