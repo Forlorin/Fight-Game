@@ -2,7 +2,7 @@
 #include "ui_widget.h"
 
 Widget::Widget(QWidget *parent) :
-    input(0,1),
+    input(0,0),
     QWidget(parent),
     ui(new Ui::Widget)
 {
@@ -29,16 +29,16 @@ Widget::Widget(QWidget *parent) :
     tempslot->setGeometry(500,230,500,40);
     tempslot->show();
 
-    this->setFixedSize(1000,500);
+    this->setFixedSize(1000,1000);
     ui->setupUi(this);
     timer=startTimer(1000/30);
 
     La[0]=new QLabel(this);
-    La[0]->setGeometry(0,0,1000,250);
+    La[0]->setGeometry(0,0,1000,500);
     La[0]->setText("Hello La");
 
     La[1]=new QLabel(this);
-    La[1]->setGeometry(0,250,1000,250);
+    La[1]->setGeometry(0,500,1000,500);
     La[1]->setText("Hello Lb");
 
     Lskill[0]=new QLabel(this);
@@ -124,11 +124,23 @@ void Widget::viewupdate()
             if(np->skills[i].empty)
                 continue;
             str+="Skill #";
+            if(i<10)
+                str+=" ";
             str+=QString::number(i);
             str+=": ";
 
             str+="Pri:";
+            if(ns->getPri()>0)
+                str+=" ";
             str+=QString::number(ns->getPri());
+            str+=" ";
+
+            str+="Sta:";
+            str+=QString::number(ns->status);
+            str+=" ";
+
+            str+="Ref:";
+            str+=QString::number(ns->id);
             str+=" ";
 
             str+="Len:";
@@ -173,7 +185,7 @@ void Widget::viewupdate()
                     str+=" ";
             }
 
-            if(ns->isAct(0))
+            if(ns->isAct(1))
                 str+=" Acting!",hasA=1;
             str+="\n";
         }
@@ -184,19 +196,19 @@ void Widget::viewupdate()
         }
 
         str+="Now Acting: ";
-        str+=QString::number(np->Act(0));
+        str+=QString::number(np->Act(1));
         str+="\n";
 
         La[i]->setText(str);
 
-        if(np->Act(0)!=-1)
+        if(np->Act(1)!=0)
         {
             str="player #"+QString::number(i)+":";
             for(int j=0;j<19;j++)
             {
                 skillrec[i][j]=skillrec[i][j+1];
             }
-            skillrec[i][19]=np->Act(0);
+            skillrec[i][19]=np->Act(1);
 
             for(int j=0;j<20;j++)
             {

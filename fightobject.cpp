@@ -173,7 +173,7 @@ Action::Action(int cha, int ski)
     aironly=0;
     jump=0;
     move=0;
-    next=0;
+    next=1;
     fly=0;
 
     switch(cha)
@@ -391,7 +391,7 @@ void Character::set_status(int s)
 
 bool Character::do_act(int id,int pri)
 {
-    if(status==0&&acts[id].isAirOnly()==in_air&&(pri>act_pri||pri==-1))
+    if(status==0&&acts[id].isAirOnly()==in_air&&(pri>act_pri||pri<0))
     {
         act_doing=id;
         act_pri=pri;

@@ -11,7 +11,7 @@ class skillslot
 {
 public:
     bool empty;
-    int status;
+    int status;         //0 any  1 stand  2 in-air  3  squat   4  right   5   left
     int queue[skill_len];
     int time[skill_len];
     int flag;

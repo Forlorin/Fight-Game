@@ -162,7 +162,6 @@ skillslot::skillslot()
 
 skillslot::skillslot(int id)
 {
-    this->id=id;
     for(int i=0;i<skill_len;i++)
     {
         queue[i]=0;
@@ -170,104 +169,179 @@ skillslot::skillslot(int id)
     empty=0;
     timer=0;
     flag=0;
-    status=0;
-    switch(id)
+    status=0;       //0 any  1 stand  2 in-air  3  squat   4  right   5   left
+    switch(id)//basic
     {
     case 0:
-        len=1;
-        priority=1;
-        queue[0]=Qt::Key_J;time[0]=0;
+        len=0;          //stand
+        priority=-2;
+        status=1;
+        this->id=0;
         break;
     case 1:
-        len=1;
-        priority=1;
-        queue[0]=Qt::Key_K;time[0]=0;
+        len=0;          //squat
+        priority=-2;
+        status=3;
+        this->id=2;
         break;
     case 2:
-        len=1;
-        priority=1;
-        queue[0]=Qt::Key_L;time[0]=0;
+        len=0;
+        priority=-1;
+        status=4;       //move forward
+        this->id=4;
         break;
     case 3:
-        len=1;
-        priority=1;
-        queue[0]=Qt::Key_U;time[0]=0;
+        len=0;
+        priority=-1;
+        status=5;       //move forward
+        this->id=5;
         break;
     case 4:
-        len=1;
+        len=1;          //jump
         priority=1;
-        queue[0]=Qt::Key_I;time[0]=0;
+        status=1;
+        this->id=6;
+        queue[0]=Qt::Key_Up;time[0]=2;
         break;
     case 5:
         len=1;
-        priority=1;
-        queue[0]=Qt::Key_O;time[0]=0;
+        priority=1;     //dash forward
+        status=4;
+        this->id=7;
+        queue[0]=Qt::Key_L;time[0]=0;
         break;
-    //*********************priority  2*************************//
     case 6:
-        len=3;
-        priority=2;
-        queue[0]=Qt::Key_Down;time[0]=3;
-        queue[1]=Qt::Key_Right;time[1]=3;       //↓→J
-        queue[2]=Qt::Key_J;time[2]=3;
+        len=1;
+        priority=1;     //dash backward
+        status=5;
+        this->id=8;
+        queue[0]=Qt::Key_L;time[0]=0;
         break;
     case 7:
-        len=3;
-        priority=2;
-        queue[0]=Qt::Key_Down;time[0]=3;
-        queue[1]=Qt::Key_Left;time[1]=3;        //↓←J
-        queue[2]=Qt::Key_J;time[2]=3;
+        len=1;
+        priority=1;     //punch
+        status=0;
+        this->id=13;
+        queue[0]=Qt::Key_J;time[0]=0;
         break;
     case 8:
-        len=3;
-        priority=2;
-        queue[0]=Qt::Key_Down;time[0]=3;
-        queue[1]=Qt::Key_Right;time[1]=3;       //↓→K
-        queue[2]=Qt::Key_K;time[2]=3;
+        len=1;
+        priority=1;     //kick
+        status=0;
+        this->id=14;
+        queue[0]=Qt::Key_K;time[0]=0;
         break;
     case 9:
-        len=3;
-        priority=2;
-        queue[0]=Qt::Key_Down;time[0]=3;
-        queue[1]=Qt::Key_Left;time[1]=3;        //↓←K
-        queue[2]=Qt::Key_K;time[2]=3;
+        len=1;
+        priority=1;     //heavy punch
+        status=0;
+        this->id=15;
+        queue[0]=Qt::Key_U;time[0]=0;
         break;
     case 10:
-        len=3;
-        priority=2;
-        queue[0]=Qt::Key_Down;time[0]=3;
-        queue[1]=Qt::Key_Right;time[1]=3;       //↓→U
-        queue[2]=Qt::Key_U;time[2]=3;
+        len=1;
+        priority=1;     //heavy kick
+        status=0;
+        this->id=16;
+        queue[0]=Qt::Key_I;time[0]=0;
         break;
-    case 11:
-        len=3;
-        priority=2;
-        queue[0]=Qt::Key_Down;time[0]=3;
-        queue[1]=Qt::Key_Left;time[1]=3;        //↓←U
-        queue[2]=Qt::Key_U;time[2]=3;
+    default:
         break;
-    case 12:
-        len=3;
+    }
+
+    //*************** Aura *********************//
+    if(id>=100&&id<200)
+    switch(id)
+    {
+    case 101:
+        len=2;          //upper kick      1
         priority=2;
-        queue[0]=Qt::Key_Down;time[0]=3;
-        queue[1]=Qt::Key_Right;time[1]=3;       //↓→I
-        queue[2]=Qt::Key_I;time[2]=3;
+        status=1;
+        this->id=17;
+        queue[0]=Qt::Key_Up;time[0]=2;
+        queue[1]=Qt::Key_K;time[1]=0;
         break;
-    case 13:
-        len=3;
+    case 102:
+        len=2;          //upper kick      2
         priority=2;
-        queue[0]=Qt::Key_Down;time[0]=3;
-        queue[1]=Qt::Key_Left;time[1]=3;        //↓←I
-        queue[2]=Qt::Key_I;time[2]=3;
+        status=1;
+        this->id=17;
+        queue[0]=Qt::Key_Up;time[0]=2;
+        queue[1]=Qt::Key_I;time[1]=0;
         break;
-    //*******************Aura start**************************//
-    case 14:
+    case 103:
+        len=1;
+        priority=2;    //squat kick    1
+        status=3;
+        this->id=18;
+        queue[0]=Qt::Key_K;time[0]=0;
+        break;
+    case 104:
+        len=1;
+        priority=2;    //squat kick    2
+        status=3;
+        this->id=18;
+        queue[0]=Qt::Key_I;time[0]=0;
+        break;
+    case 105:
+        len=3;
+        priority=2;    //floor kick
+        status=4;
+        this->id=19;
+        queue[0]=Qt::Key_Down;time[0]=3;
+        queue[1]=Qt::Key_Right;time[1]=3;
+        queue[2]=Qt::Key_K;time[2]=0;
+        break;
+    case 106:
         len=4;
-        priority=3;
+        priority=2;    //hair attack
+        status=1;       // attention!  in-air not equal to press up
+        this->id=20;
         queue[0]=Qt::Key_Down;time[0]=3;
-        queue[1]=Qt::Key_Right;time[1]=3;        //↓→↑J
+        queue[1]=Qt::Key_Right;time[1]=3;
         queue[2]=Qt::Key_Up;time[2]=3;
-        queue[3]=Qt::Key_J;time[3]=2;
+        queue[3]=Qt::Key_U;time[3]=0;
+        break;
+    case 107:
+        len=3;
+        priority=2;    //ice fly
+        status=1;
+        this->id=21;
+        queue[0]=Qt::Key_Down;time[0]=3;
+        queue[1]=Qt::Key_Right;time[1]=3;
+        queue[2]=Qt::Key_J;time[2]=0;
+        break;
+    case 108:
+        len=5;
+        priority=3;    //blow ice    1
+        status=1;
+        this->id=22;
+        queue[0]=Qt::Key_Down;time[0]=3;
+        queue[1]=Qt::Key_Right;time[1]=3;
+        queue[2]=Qt::Key_Down;time[2]=3;
+        queue[3]=Qt::Key_Right;time[3]=3;
+        queue[4]=Qt::Key_J;time[4]=0;
+        break;
+    case 109:
+        len=5;
+        priority=3;    //blow ice    2
+        status=4;
+        this->id=22;
+        queue[0]=Qt::Key_Down;time[0]=3;
+        queue[1]=Qt::Key_Right;time[1]=3;
+        queue[2]=Qt::Key_Down;time[2]=3;
+        queue[3]=Qt::Key_Right;time[3]=3;
+        queue[4]=Qt::Key_J;time[4]=0;
+        break;
+    case 110:
+        len=4;
+        priority=2;    //upper punch
+        status=1;       // attention!  in-air not equal to press up
+        this->id=23;
+        queue[0]=Qt::Key_Down;time[0]=3;
+        queue[1]=Qt::Key_Right;time[1]=3;
+        queue[2]=Qt::Key_Up;time[2]=3;
+        queue[3]=Qt::Key_J;time[3]=0;
         break;
     }
 }
@@ -282,9 +356,11 @@ void player::push(int key)
 
 int player::Act(int stat)
 {
-    int nact=-1,npri=0;
+    int nact=-1,npri=-10;
     for(int i=0;i<skill_num;i++)
     {
+        if(skills[i].empty)
+            continue;
         if(skills[i].isAct(stat)&&skills[i].getPri()>npri)
         {
             nact=i;
@@ -299,7 +375,7 @@ int player::Act(int stat)
                 skills[i].clear();
         }
     }
-    return nact;
+    return skills[nact].id;
 }
 
 void player::update()
@@ -319,35 +395,19 @@ player::player()
 
 player::player(int id)
 {
-    //skills[used++]=skillslot();
-    int used=3;
-    skills[used+0]=skillslot(0); //basic JKLUIO
-    skills[used+1]=skillslot(1);
-    skills[used+2]=skillslot(2);
-    skills[used+3]=skillslot(3);
-    skills[used+4]=skillslot(4);
-    skills[used+5]=skillslot(5);
-    used+=6;
-    switch(id)  //basic ↓→J things
+    int used=0;
+    for(int i=0;i<11;i++)
     {
-    case 0:
-    case 1:
-        skills[used++]=skillslot(6);
-        skills[used++]=skillslot(7);
-        skills[used++]=skillslot(8);
-        skills[used++]=skillslot(9);
-        skills[used++]=skillslot(10);
-        skills[used++]=skillslot(11);
-        skills[used++]=skillslot(12);
-        skills[used++]=skillslot(13);
+        skills[i]=skillslot(i);//basic
     }
+    used+=11;
     switch(id)
     {
-    case 0:
-        skills[used++]=skillslot(14);
-        break;
-    case 1:
-
+    case 0:     //Aura
+        for(int i=1;i<=10;i++)
+        {
+            skills[used++]=skillslot(100+i);
+        }
         break;
     }
 }
