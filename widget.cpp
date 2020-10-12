@@ -7,8 +7,8 @@ Widget::Widget(QWidget *parent) :
     ui(new Ui::Widget)
 {
 
-    nact=22;
-    frime=30;
+    nact=1;
+    frime=3;
     ndx=0;
     ndy=0;
     hasK=0;
@@ -23,6 +23,12 @@ Widget::Widget(QWidget *parent) :
 
     timer=-1;
     timer=startTimer(1000/frime);
+
+    cinair=new QPushButton(this);
+    cinair->setGeometry(860,900,100,50);
+    cinair->setText(QString::number(in_air));
+    connect(cinair,SIGNAL(pressed()),this,SLOT(changein_air()));
+    cinair->show();
 
     pbut=new QPushButton(this);
     pbut->setGeometry(860,600,100,50);
@@ -116,18 +122,12 @@ Widget::Widget(QWidget *parent) :
     Ltime=new QLabel(this);
     Ltime->setGeometry(750,200,250,100);
     Ltime->show();
+
+    //fight->player[0].do_act(0,-10);
 }
 
 void Widget::timerEvent(QTimerEvent *)
 {
-    if(hasK)
-    {
-        hasK=0;
-    }
-    else
-    {
-        hasK=0;
-    }
     viewupdate();
     int st0,st1,p1,p2;
     input.getSt(st0,st1,p1,p2,nstat,nstat);
@@ -298,23 +298,32 @@ void Widget::viewupdate()
     cha[0][0]->hide();
     cha[0][0]->hide();
 
-    //qDebug()<<fight->player[0].act_doing<<' '<<fight->player[0].act_timer;
+    qDebug()<<fight->player[0].act_doing<<' '<<fight->player[0].act_timer;
 
     Hitbox nhit;
     nhit=fight->player[0].get_hitbox();
     int dx,dy,dw,dh;
+    int ox=600,oy=600;
     QString timg;
     nhit.get(dx,dy,dw,dh,timg);
-    cha[0][0]->setGeometry(500+dx,650-dy,dw,dh);
+    dx*=4;
+    dy*=4;
+    dw*=4;
+    dh*=4;
+    cha[0][0]->setGeometry(ox+dx+ndx,oy-dy-ndy,dw,dh);
     cha[0][0]->setStyleSheet("QLabel{border-image: url("+timg+")}");
-    //qDebug()<<timg;
+    qDebug()<<timg;
     cha[0][0]->show();
 
     nhit=fight->player[0].get_atabox();
     nhit.get(dx,dy,dw,dh,timg);
-    cha[0][1]->setGeometry(500+dx+ndx,650-dy+ndy,dw,dh);
+    dx*=4;
+    dy*=4;
+    dw*=4;
+    dh*=4;
+    cha[0][1]->setGeometry(ox+dx,oy-dy,dw,dh);
     cha[0][1]->setStyleSheet("QLabel{border-image: url("+timg+")}");
-    //qDebug()<<timg;
+    qDebug()<<timg;
     cha[0][1]->show();
 }
 
@@ -326,7 +335,7 @@ Widget::~Widget()
 void Widget::changeact()
 {
     nact+=1;
-    if(nact==24)
+    if(nact==27)
         nact=0;
     nextact->setText(QString::number(nact));
 }
@@ -344,9 +353,18 @@ void Widget::changetime()
 void Widget::changestat()
 {
     nstat+=1;
+    if(nstat==2||nstat==3)
+        changein_air();
     if(nstat==6)
         nstat=1;
     cstat->setText(QString::number(nstat));
+}
+
+void Widget::changein_air()
+{
+    in_air=!in_air;
+    fight->player[0].set_in_air(in_air);
+    cinair->setText(QString::number(in_air));
 }
 
 void Widget::changexy(int a, int b)
@@ -364,7 +382,6 @@ void Widget::act()
 
 void Widget::pac()
 {
-    //timerEvent(nullptr);
     if(timer!=-1)
     {
         killTimer(timer);

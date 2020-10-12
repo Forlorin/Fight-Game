@@ -225,28 +225,28 @@ skillslot::skillslot(int id)
     case 7:
         len=1;
         priority=1;     //punch
-        status=0;
+        status=1;
         this->id=13;
         queue[0]=Qt::Key_J;time[0]=0;
         break;
     case 8:
         len=1;
         priority=1;     //kick
-        status=0;
+        status=1;
         this->id=14;
         queue[0]=Qt::Key_K;time[0]=0;
         break;
     case 9:
         len=1;
         priority=1;     //heavy punch
-        status=0;
+        status=1;
         this->id=15;
         queue[0]=Qt::Key_U;time[0]=0;
         break;
     case 10:
         len=1;
         priority=1;     //heavy kick
-        status=0;
+        status=1;
         this->id=16;
         queue[0]=Qt::Key_I;time[0]=0;
         break;
@@ -258,6 +258,9 @@ skillslot::skillslot(int id)
     if(id>=100&&id<200)
     switch(id)
     {
+    case 10:
+        status=0;
+        break;
     case 101:
         len=2;          //upper kick      1
         priority=2;
@@ -348,6 +351,34 @@ skillslot::skillslot(int id)
         queue[2]=Qt::Key_Up;time[2]=3;
         queue[3]=Qt::Key_J;time[3]=0;
         break;
+    case 111:
+        len=1;          //flying punch  1
+        priority=1;
+        status=2;
+        this->id=25;
+        queue[0]=Qt::Key_J;time[0]=0;
+        break;
+    case 112:
+        len=1;          //flying punch  2
+        priority=1;
+        status=2;
+        this->id=25;
+        queue[0]=Qt::Key_U;time[0]=0;
+        break;
+    case 113:
+        len=1;          //flying kick  1
+        priority=1;
+        status=2;
+        this->id=26;
+        queue[0]=Qt::Key_K;time[0]=0;
+        break;
+    case 114:
+        len=1;          //flying kick  2
+        priority=1;
+        status=2;
+        this->id=26;
+        queue[0]=Qt::Key_I;time[0]=0;
+        break;
     }
 }
 
@@ -364,9 +395,9 @@ void player::Act(int stat,int &id,int &pri)
     int nact=-1,npri=-10;
     for(int i=0;i<skill_num;i++)
     {
+        skillslot* tslot=&skills[i];
         if(skills[i].empty)
             continue;
-        skillslot* tslot=&skills[i];
         if(skills[i].isAct(stat)&&skills[i].getPri()>npri)
         {
             nact=i;
@@ -419,7 +450,7 @@ player::player(int id)
     switch(id)
     {
     case 0:     //Aura
-        for(int i=1;i<=10;i++)
+        for(int i=1;i<=14;i++)
         {
             skills[used++]=skillslot(100+i);
         }

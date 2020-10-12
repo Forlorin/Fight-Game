@@ -103,25 +103,36 @@ Hitbox::Hitbox(int cha,int ski,int fri,bool hasimg)
     if(!hasimg)
         img="";
 
-
+    int num0[16]={8,7,1,0,-1};
     int num200[8]={0,10,30,30,30,25,25,20};
     int num230[11]={5,5,7,7,0,-5,18,22,5,5,0};
-    int num220[15]={0,0,0,7,10,15,30,33,35,33,35,15,10,10,0};
+    int num220[15]={10,14,13,19,23,   28,41,45,46,46,   47,29,29,16,13};
     int num210[13]={0,3,0,-3,-10,-17,13,16,7,7,5,5,7};
     int num240[8]={0,10,10,20,20,20,23,25};
     int num400[6]={0,10,20,15,3,0};
     int num420[8]={3,12,20,25,26,19,17,5};
     int num943[8]={0,-1,-2,-3,-4,12,12,12};
-    int num1000[9]={3,-2,-3,-3,-1,4,2,0,0};
+    int num1000[10]={4,-1,-2,-2,0,4,3,2,-2,4};
     int num1010[2][19]={
         {78,70,51,35,29,27,27,27,27,21,21,21,21,21,21,21,21,21,21},
         {33,44,63,76,81,81,81,81,81,92,92,92,92,92,92,92,92,92,92}
+    };
+    int num600[2][7]={
+        {17,17,-42,-42,-42,-14,-14},
+        {-10,0,15,15,15,12,12}
+    };
+    int num610[2][5]={
+        {0,0,0,0,5},
+        {10,10,12,0,-20}
     };
     switch(cha)
     {
     case 0:     //Aura
         switch(ski)
         {
+        case 0:
+            dx+=num0[fri];
+            break;
         case 5000:
             switch(fri)
             {
@@ -160,6 +171,14 @@ Hitbox::Hitbox(int cha,int ski,int fri,bool hasimg)
         case 1010:
             dy+=num1010[0][fri];
             dx+=num1010[1][fri];
+            break;
+        case 600:
+            dy+=num600[0][fri];
+            dx+=num600[1][fri];
+            break;
+        case 610:
+            dy+=num610[0][fri];
+            dx+=num610[1][fri];
             break;
         }
         break;
@@ -242,12 +261,17 @@ Action::Action(int cha, int ski)
     next=1;
     fly=0;
 
+    bool no_hit=0;
+
+
     switch(cha)
     {
     case 0://Aura
         int st=0;
         int len=0;
         int tdam=0;
+        if(ski<=12||ski==24)
+            no_hit=1;
         switch(ski)
         {
         case 0:         //start
@@ -291,6 +315,7 @@ Action::Action(int cha, int ski)
             break;
         case 24:         //falling
             len=1;
+            aironly=1;
             loop=-len;
             ski=41;
             st=7;
@@ -357,6 +382,7 @@ Action::Action(int cha, int ski)
             len=6;
             loop=len;
             ski=400;
+            next=3;
             break;
         case 19:        //floor kick
             len=7;
@@ -387,12 +413,29 @@ Action::Action(int cha, int ski)
             ski=1500;
             next=1;
             break;
+        case 25:        //flying punch
+            len=7;
+            aironly=1;
+            loop=len;
+            ski=600;
+            next=24;
+            break;
+        case 26:
+            len=5;      //flying kick
+            aironly=1;
+            loop=len;
+            ski=610;
+            next=24;
+            break;
         }
         for(int i=st;i<st+len;i++)
         {
             damage[i]=tdam;
             qDebug()<<QString::number(i)<<":";
-            hits[i-st]=Hitbox(0,ski,i,0);
+            if(!no_hit)
+                hits[i-st]=Hitbox(0,ski,i,0);
+            else
+                hits[i-st]=Hitbox(-1,0,0,0);
             body[i-st]=Hitbox(0,ski,i,1);
             hitstime[i]=1;
         }
@@ -494,6 +537,7 @@ Action::Action(int cha, int ski)
             {
                 hits[i]=Hitbox(0,1510,i,1);
             }
+            break;
         }
         break;
     }
@@ -545,23 +589,25 @@ bool Character::do_act(int id,int pri)
 {
     if(id<0||id>actnum)
         return false;
-    if(id==4&&act_doing==1)
+    if(pri==-10)
     {
-        id=4;
+        pri=-10;
     }
-    if(status==0)
+    if(status==0||pri<=-10)
     {
-        if(!acts[id].isAirOnly()==in_air)
+        if(!acts[id].isAirOnly()==in_air&&pri>-10)
              return false;
-        if(!(pri>act_pri||(pri<-1&&act_pri>0)||(id<=5&&act_doing<=5&&id!=act_doing)))
+        if(!(pri>act_pri||(pri<-1&&act_pri>0)||(id<=5&&act_doing<=5&&id!=act_doing)||pri<=-10))
             return false;
-        if(id==0&&act_doing==1)
+        if(id==0&&act_doing==1&&pri>-10)
             return false;
-        if(id==2&&act_doing==3)
+        if(id==2&&act_doing==3&&pri>-10)
             return false;
         qDebug()<<id<<" succeed";
         act_doing=id;
         act_pri=pri;
+        if(pri==-10)
+            act_pri=15;
         act_timer=0;
 
         return true;
@@ -583,7 +629,6 @@ void Character::update()
     {
         if(act_timer==st)
         {
-            status=0;
             act_pri=-2;
             if(do_act(nact->get_next(),-1))
                  return;
@@ -597,6 +642,8 @@ void Character::update()
     }
     else
     {
+        if(act_pri==15)
+            act_pri=-2;
         if(act_timer==-st)
         {
             act_timer=0;
@@ -624,7 +671,7 @@ Character::Character(int id)
     switch(id)
     {
     case 0: //Aura
-        for(int i=0;i<25;i++)
+        for(int i=0;i<=26;i++)
         {
             acts[i]=Action(0,i);
         }

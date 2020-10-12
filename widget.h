@@ -22,6 +22,8 @@ public:
     int nstat;
     int frime;
 
+    bool in_air;
+
     bool hasK;
 
     FightObject* fight;
@@ -40,6 +42,7 @@ public:
     QPushButton* nextact;
     QPushButton* actit;
     QPushButton* ctime;
+    QPushButton* cinair;
     QPushButton* cx[2];
     QPushButton* cy[2];
     QPushButton* pbut;
@@ -67,6 +70,7 @@ public slots:
     void changeact();
     void changetime();
     void changestat();
+    void changein_air();
     void changexy(int, int);
     void act();
     void pac();
