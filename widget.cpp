@@ -8,7 +8,7 @@ Widget::Widget(QWidget *parent) :
 {
 
     nact=1;
-    frime=3;
+    frime=30;
     ndx=0;
     ndy=0;
     hasK=0;
@@ -324,6 +324,7 @@ void Widget::viewupdate()
     cha[0][1]->setGeometry(ox+dx,oy-dy,dw,dh);
     cha[0][1]->setStyleSheet("QLabel{border-image: url("+timg+")}");
     qDebug()<<timg;
+    qDebug()<<fight->player[0].hit_timer;
     cha[0][1]->show();
 }
 
@@ -382,13 +383,5 @@ void Widget::act()
 
 void Widget::pac()
 {
-    if(timer!=-1)
-    {
-        killTimer(timer);
-        timer=-1;
-    }
-    else
-    {
-        timer=startTimer(1000/frime);
-    }
+    fight->player[0].beHit(nact);
 }

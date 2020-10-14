@@ -30,6 +30,7 @@ class Action
     bool jump;
     float move;
     int fly;
+    int force;
 
     int loop;
     int next;
@@ -43,6 +44,7 @@ public:
     bool isAirOnly();
     bool isJump();
     int get_move();
+    int get_force();
 
     int start();
     int get_next();
@@ -60,9 +62,10 @@ class Character
 {
     int health;
     int status;
-    int hittype;
+
     bool in_air;
 public:
+    int hit_timer;
     int act_doing;
     int act_pri;
     int act_timer;
@@ -77,6 +80,8 @@ public:
     Hitbox get_hitbox();
     Hitbox get_atabox();
     int get_damage();
+
+    bool beHit(int force);
 
     void set_health(int);
     void set_status(int);

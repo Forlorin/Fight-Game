@@ -214,6 +214,11 @@ int Action::get_next()
     return next;
 }
 
+int Action::get_force()
+{
+    return force;
+}
+
 int Action::get_damage(int time)
 {
     int temp=0;
@@ -254,15 +259,15 @@ Action::Action()
 
 Action::Action(int cha, int ski)
 {
-    qDebug()<<"Build "<<QString::number(ski);
     aironly=0;
+    qDebug()<<"Build "<<QString::number(ski);
     jump=0;
     move=0;
     next=1;
     fly=0;
+    force=0;
 
     bool no_hit=0;
-
 
     switch(cha)
     {
@@ -357,44 +362,53 @@ Action::Action(int cha, int ski)
             len=8;
             loop=len;
             ski=200;
+            tdam=4;
             break;
         case 14:        //kick
             len=11;
             loop=len;
             ski=230;
+            tdam=6;
             break;
         case 15:        //heavy punch
             len=15;
             loop=len;
             ski=220;
+            tdam=7;
             break;
         case 16:        //heavy kick
             len=13;
             loop=len;
             ski=210;
+            tdam=7;
             break;
         case 17:        //upper kick
             len=8;
             loop=len;
             ski=240;
+            force=21;
+            tdam=8;
             break;
         case 18:        //squat kick
             len=6;
             loop=len;
             ski=400;
             next=3;
+            tdam=6;
             break;
         case 19:        //floor kick
             len=7;
             loop=len;
             ski=410;
             next=3;
+            tdam=7;
             break;
         case 20:        //hair attack
             len=8;
             loop=len;
             ski=420;
             next=3;
+            tdam=7;
             break;
         case 21:        //ice fly
             len=8;
@@ -406,12 +420,15 @@ Action::Action(int cha, int ski)
             len=10;     //special
             loop=len;
             ski=1000;
+            force=2;
             break;
         case 23:        //upper punch
             len=9;      //special
             loop=len;
             ski=1500;
             next=1;
+            force=21;
+            tdam=8;
             break;
         case 25:        //flying punch
             len=7;
@@ -419,6 +436,7 @@ Action::Action(int cha, int ski)
             loop=len;
             ski=600;
             next=24;
+            tdam=5;
             break;
         case 26:
             len=5;      //flying kick
@@ -426,6 +444,7 @@ Action::Action(int cha, int ski)
             loop=len;
             ski=610;
             next=24;
+            tdam=8;
             break;
         }
         for(int i=st;i<st+len;i++)
@@ -439,6 +458,9 @@ Action::Action(int cha, int ski)
             body[i-st]=Hitbox(0,ski,i,1);
             hitstime[i]=1;
         }
+        if(force==0)
+            force=len-3;
+        force=force>0?force:1;
         switch(ski) //special deal
         {
         default:
@@ -479,12 +501,12 @@ Action::Action(int cha, int ski)
             hitstime[1]=8;
             break;
         case 5000:
-            loop+=3;
+            loop+=100;
             for(int i=0;i<4;i++)
             {
                 body[i]=Hitbox(0,ski,10*i,1);
             }
-            hitstime[3]=4;
+            hitstime[3]=100;
             break;
         case 5100:
             loop=2*loop;
@@ -573,6 +595,27 @@ int Character::get_damage()
     return acts[act_doing].get_damage(act_timer);
 }
 
+bool Character::beHit(int force)
+{
+    if(status!=0||force<=0)
+    {
+        return false;
+    }
+    if(force<=20)//normal
+    {
+        do_act(9,15);
+        status=2;
+        hit_timer=force;
+    }
+    else
+    {
+        hit_timer=force;
+        do_act(10,15);
+        status=2;
+    }
+    return true;
+}
+
 
 
 void Character::set_health(int h)
@@ -589,15 +632,11 @@ bool Character::do_act(int id,int pri)
 {
     if(id<0||id>actnum)
         return false;
-    if(pri==-10)
-    {
-        pri=-10;
-    }
-    if(status==0||pri<=-10)
+    if(status==0||pri<=-10||pri>100)
     {
         if(!acts[id].isAirOnly()==in_air&&pri>-10)
              return false;
-        if(!(pri>act_pri||(pri<-1&&act_pri>0)||(id<=5&&act_doing<=5&&id!=act_doing)||pri<=-10))
+        if(!(pri>act_pri||(pri<-1&&act_pri>0)||(id<=5&&(act_doing<=5||act_doing==24)&&id!=act_doing)||pri<=-10||pri>100))
             return false;
         if(id==0&&act_doing==1&&pri>-10)
             return false;
@@ -608,6 +647,8 @@ bool Character::do_act(int id,int pri)
         act_pri=pri;
         if(pri==-10)
             act_pri=15;
+        if(pri<-100||pri>100)
+            act_pri=pri>100?pri-100:pri+100;
         act_timer=0;
 
         return true;
@@ -630,7 +671,7 @@ void Character::update()
         if(act_timer==st)
         {
             act_pri=-2;
-            if(do_act(nact->get_next(),-1))
+            if(do_act(nact->get_next(),-101))
                  return;
             else if(do_act(1,-1))
                  return;                // 1 stand
@@ -651,6 +692,26 @@ void Character::update()
         }
         act_timer++;
     }
+    if(hit_timer==4)
+    {
+        if(act_doing==11)
+        {
+            act_doing=12;
+            act_pri=-1;
+            act_timer=0;
+        }
+        else
+            status=1;
+    }
+    else if(hit_timer==0)
+    {
+        status=0;
+        act_doing=1;
+        act_pri=-1;
+        act_timer=0;
+    }
+    if(hit_timer>=0)
+        --hit_timer;
 }
 
 Character::Character()
@@ -662,11 +723,12 @@ Character::Character(int id)
 {
     health=100;
     status=0;
-    hittype=0;
     in_air=0;
+    hit_timer=0;
     act_doing=0;
     act_pri=0;
     act_timer=0;
+    hit_timer=-1;
 
     switch(id)
     {
@@ -713,4 +775,14 @@ FlyObject::FlyObject(int x, int y, int id,bool right)
     timer=0;
     if(!right)
         v_x=-v_x;
+    switch(id)
+    {
+    case 1://Aura
+        disap=1;
+        damage=2;
+        loop=4;
+        for(int i=0;i<loop;i++)
+            hit[i]=Hitbox(0,940,i,1);
+        break;
+    }
 }
