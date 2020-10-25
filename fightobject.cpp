@@ -199,7 +199,7 @@ bool Action::isJump()
     return jump;
 }
 
-int Action::get_move()
+float Action::get_move()
 {
     return move;
 }
@@ -593,6 +593,11 @@ Hitbox Character::get_atabox()
 int Character::get_damage()
 {
     return acts[act_doing].get_damage(act_timer);
+}
+
+Action Character::get_action()
+{
+    return acts[act_doing];
 }
 
 bool Character::beHit(int force)

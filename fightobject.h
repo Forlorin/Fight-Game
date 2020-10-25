@@ -43,7 +43,7 @@ class Action
 public:  
     bool isAirOnly();
     bool isJump();
-    int get_move();
+    float get_move();
     int get_force();
 
     int start();
@@ -80,6 +80,7 @@ public:
     Hitbox get_hitbox();
     Hitbox get_atabox();
     int get_damage();
+    Action get_action();
 
     bool beHit(int force);
 

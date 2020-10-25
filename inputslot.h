@@ -52,8 +52,8 @@ public:
     void push(int, bool);//int: key   bool:  player0 is left?
     void update();          //every frame need to be used
     void getSt(int &a, int &b, int &pa, int &pb, int s0, int s1);
-                        //player0 id  pri   player1  id pri
-                        //status 0            status 1
+    //player0 id  pri   player1  id pri
+    //status 0            status 1
 
     static int trans(int, bool);
 
