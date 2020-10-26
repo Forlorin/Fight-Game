@@ -13,54 +13,81 @@ class Hitbox
 {
     int dx,dy;
     int w,h;
+    QString img;
 public:
-    void get(int&,int&,int&,int&);
+    void get(int& x, int& y, int& w, int& h, QString &timg);
 
     Hitbox();
-    Hitbox(int,int,int,int);
+    Hitbox(int cha, int ski, int fri,bool hasimg);
 };
 
 #define ActionFrame 50
 
 class Action
 {
-    int hittype;
+    friend class Character;
     bool aironly;
+    bool jump;
+    float move;
+    int fly;
+    int force;
+
     int loop;
-    QString img[ActionFrame];
+    int next;
+
+    int damage[ActionFrame];
     Hitbox hits[ActionFrame];
+    Hitbox body[ActionFrame];
     short hitstime[ActionFrame];
-public:
+
+public:  
     bool isAirOnly();
+    bool isJump();
+    float get_move();
+    int get_force();
+
     int start();
-    int get_hittype();
+    int get_next();
+    int get_damage(int time);
+    Hitbox get_hitbox(int time);
+    Hitbox get_body(int time);
 
     Action();
-    Action(int);
+    Action(int,int);
 };
 
-#define actnum 20
+#define actnum 40
 
 class Character
 {
     int health;
     int status;
-    int hittype;
+
     bool in_air;
-    Action acts[actnum];
-    int act_doing;
-    int act_timer;
-    Hitbox hit[2];
 public:
+    int hit_timer;
+    int act_doing;
+    int act_pri;
+    int act_timer;
+
+    Action acts[actnum];
+
+//public:
+
     int get_health();
     int get_status();
-    Hitbox get_hitbox();
 
+    Hitbox get_hitbox();
+    Hitbox get_atabox();
+    int get_damage();
+    Action get_action();
+
+    bool beHit(int force);
 
     void set_health(int);
     void set_status(int);
-    bool do_act(int);
     void set_in_air(bool);
+    bool do_act(int id,int pri);
 
     void update();
 
@@ -68,34 +95,48 @@ public:
     Character(int);
 };
 
+#define Fly_frame 10
+
 class FlyObject
 {
     friend class FightObject;
 
-    QString img;
     int damage;
+    bool disap;
     int x,y;
     int v_x,v_y;
-    Hitbox hit;
+
+    int loop;
+    int timer;
+
+    Hitbox hit[Fly_frame];
 public:
     FlyObject* pre;
     FlyObject* next;
 
-    FlyObject(int,int,int);
+    void get_xy(int &x,int &y);
+    Hitbox get_hit();
+    bool isDis();
+
+    void update();
+
+    FlyObject(int x, int y, int id, bool right);
 };
 
 class FightObject
 {
+
     int w,h;
+
 public:
     Character player[2];
     FlyObject* flyhead;
 
     void flydelete(FlyObject*);
     void flyupdate();
-    void flyadd(int,int,int);
+    void flyadd(int x, int y, int id,bool isright);
 
-    FightObject(int,int,int,int);
+    FightObject(int,int,int,int);//w h player1 player2
 };
 
 #endif // FIGHTOBJECT_H
