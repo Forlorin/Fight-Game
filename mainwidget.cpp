@@ -14,7 +14,7 @@ MainWidget::MainWidget(QWidget *parent) :
     heroSelect.setParent(this);
     for(int i=0; i<2; i++)
     {
-        for (int i=0; i<2; i++)
+        for (int j=0; j<2; j++)
         {
              connect(&heroSelect.heroHead[i][j], &QPushButton::clicked, this, [=]()
              {
@@ -191,7 +191,7 @@ void MainWidget::timerEvent(QTimerEvent *event)
      */
 
     //获取当前人物是否自由的状态
-    bool isControled[2];
+    int isControled[2];
     isControled[0]=fightObject->player[0].get_status();
     isControled[1]=fightObject->player[1].get_status();
     //取出所选的人物当前动作的编号，取出动作的优先级，传入当前人物状态编号
@@ -297,15 +297,15 @@ void MainWidget::timerEvent(QTimerEvent *event)
     /************碰撞箱检测*************/
     isUnderAttack[0]=0;
     isUnderAttack[1]=0;
-    if(!isControled[0])
+    if(isControled[0]<=0)
     {
         isUnderAttack[1] =
             ataTrangle[0].isHit(hitTrangle[1]);
-        if(isUnderAttack[1])
-            qDebug()<<"true";
+//        if(isUnderAttack[1])
+//            qDebug()<<"true";
     }
 
-    if(!isControled[1])
+    if(isControled[1]<=0)
     {
         isUnderAttack[0] =
             ataTrangle[1].isHit(hitTrangle[0]);
@@ -333,7 +333,7 @@ void MainWidget::timerEvent(QTimerEvent *event)
         health-=damage[1];
         fightObject->player[0].set_health(health);
         hpBar[0].resize(int(300.0*health/100),30);
-        qDebug()<<"0 get hit :"<<fightObject->player[1].act_doing;
+        //qDebug()<<"0 get hit :"<<fightObject->player[1].act_doing;
     }
     if(isUnderAttack[1]&&fightObject->player[1].beHit(force[0]))
     {
@@ -341,7 +341,7 @@ void MainWidget::timerEvent(QTimerEvent *event)
         health-=damage[0];
         fightObject->player[1].set_health(health);
         hpBar[1].resize(int(300.0*health/100),30);
-        qDebug()<<"1 get hit :"<<fightObject->player[1].act_doing;
+        //qDebug()<<"1 get hit :"<<fightObject->player[1].act_doing;
     }
 
 
@@ -482,7 +482,7 @@ void MainWidget::movePlayer()
     static int jumpSecond[2]{0,0};
 //    for(int i=0; i<2; i++)
 //    {
-        qDebug()<<fightObject->player[0].get_action().isJump();
+        //qDebug()<<fightObject->player[0].get_action().isJump();
         if(fightObject->player[0].get_action().isJump()==true);
         {
             if(jumpSecond[0]==0)

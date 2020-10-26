@@ -140,7 +140,7 @@ HeroSelece::HeroSelece()
         pa.setColor(QPalette::WindowText,QColor(233,0,0));
         playerTitle[i].setPalette(pa);
 
-        for (int i=0; i<2; i++)
+        for (int j=0; j<2; j++)
         {
             heroHead[i][j].resize(100,100);
             heroHead[i][j].move(i?1200:200+j*120,400);

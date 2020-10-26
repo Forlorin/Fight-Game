@@ -65,6 +65,7 @@ class Character
 
     bool in_air;
 public:
+    int inv_time;
     int hit_timer;
     int act_doing;
     int act_pri;

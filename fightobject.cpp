@@ -267,7 +267,7 @@ Action::Action(int cha, int ski)
     fly=0;
     force=0;
 
-    bool no_hit=0;
+    int no_hit=3;
 
     switch(cha)
     {
@@ -275,8 +275,8 @@ Action::Action(int cha, int ski)
         int st=0;
         int len=0;
         int tdam=0;
-        if(ski<=12||ski==24)
-            no_hit=1;
+        if(ski<=12||ski==24||ski==9||ski==10||ski==12)
+            no_hit=100;
         switch(ski)
         {
         case 0:         //start
@@ -317,6 +317,7 @@ Action::Action(int cha, int ski)
             loop=len;
             ski=41;
             next=24;
+            jump=1;
             break;
         case 24:         //falling
             len=1;
@@ -362,12 +363,14 @@ Action::Action(int cha, int ski)
             len=8;
             loop=len;
             ski=200;
+            no_hit=2;
             tdam=4;
             break;
         case 14:        //kick
             len=11;
             loop=len;
             ski=230;
+            no_hit=1;
             tdam=6;
             break;
         case 15:        //heavy punch
@@ -387,6 +390,7 @@ Action::Action(int cha, int ski)
             loop=len;
             ski=240;
             force=21;
+            no_hit=5;
             tdam=8;
             break;
         case 18:        //squat kick
@@ -450,16 +454,16 @@ Action::Action(int cha, int ski)
         for(int i=st;i<st+len;i++)
         {
             damage[i]=tdam;
-            qDebug()<<QString::number(i)<<":";
-            if(!no_hit)
+            //qDebug()<<QString::number(i)<<":";
+            if(!(i<no_hit))
                 hits[i-st]=Hitbox(0,ski,i,0);
             else
                 hits[i-st]=Hitbox(-1,0,0,0);
             body[i-st]=Hitbox(0,ski,i,1);
             hitstime[i]=1;
         }
-        if(force==0)
-            force=len-3;
+        if(force==0&&no_hit!=100)
+            force=len-no_hit;
         force=force>0?force:1;
         switch(ski) //special deal
         {
@@ -581,7 +585,7 @@ int Character::get_status()
 
 Hitbox Character::get_hitbox()
 {
-    qDebug()<<act_doing<<' '<<act_pri;
+    //qDebug()<<act_doing<<' '<<act_pri;
     return acts[act_doing].get_body(act_timer);
 }
 
@@ -608,15 +612,17 @@ bool Character::beHit(int force)
     }
     if(force<=20)//normal
     {
+        hit_timer=force;
         do_act(9,15);
         status=2;
-        hit_timer=force;
+        inv_time=0;
     }
     else
     {
         hit_timer=force;
         do_act(10,15);
         status=2;
+        inv_time=-5;
     }
     return true;
 }
@@ -637,7 +643,7 @@ bool Character::do_act(int id,int pri)
 {
     if(id<0||id>actnum)
         return false;
-    if(status==0||pri<=-10||pri>100)
+    if(status==0||status==-1||pri<=-10||pri>100)
     {
         if(!acts[id].isAirOnly()==in_air&&pri>-10)
              return false;
@@ -710,12 +716,16 @@ void Character::update()
     }
     else if(hit_timer==0)
     {
-        status=0;
+        status=-1;
         act_doing=1;
         act_pri=-1;
         act_timer=0;
     }
-    if(hit_timer>=0)
+    if(hit_timer==inv_time)
+    {
+        status=0;
+    }
+    if(hit_timer>=-10)
         --hit_timer;
 }
 
@@ -734,6 +744,7 @@ Character::Character(int id)
     act_pri=0;
     act_timer=0;
     hit_timer=-1;
+    inv_time=0;
 
     switch(id)
     {

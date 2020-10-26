@@ -250,6 +250,76 @@ skillslot::skillslot(int id)
         this->id=16;
         queue[0]=Qt::Key_I;time[0]=0;
         break;
+    case 11:
+        len=1;          //jump 2
+        priority=1;
+        status=4;
+        this->id=6;
+        queue[0]=Qt::Key_Up;time[0]=2;
+        break;
+    case 12:
+        len=1;
+        priority=1;     //punch 2
+        status=4;
+        this->id=13;
+        queue[0]=Qt::Key_J;time[0]=0;
+        break;
+    case 13:
+        len=1;
+        priority=1;     //kick 2
+        status=4;
+        this->id=14;
+        queue[0]=Qt::Key_K;time[0]=0;
+        break;
+    case 14:
+        len=1;
+        priority=1;     //heavy punch 2
+        status=4;
+        this->id=15;
+        queue[0]=Qt::Key_U;time[0]=0;
+        break;
+    case 15:
+        len=1;
+        priority=1;     //heavy kick 2
+        status=4;
+        this->id=16;
+        queue[0]=Qt::Key_I;time[0]=0;
+        break;
+    case 16:
+        len=1;          //jump 3
+        priority=1;
+        status=5;
+        this->id=6;
+        queue[0]=Qt::Key_Up;time[0]=2;
+        break;
+    case 17:
+        len=1;
+        priority=1;     //punch 3
+        status=5;
+        this->id=13;
+        queue[0]=Qt::Key_J;time[0]=0;
+        break;
+    case 18:
+        len=1;
+        priority=1;     //kick 3
+        status=5;
+        this->id=14;
+        queue[0]=Qt::Key_K;time[0]=0;
+        break;
+    case 19:
+        len=1;
+        priority=1;     //heavy punch 3
+        status=5;
+        this->id=15;
+        queue[0]=Qt::Key_U;time[0]=0;
+        break;
+    case 20:
+        len=1;
+        priority=1;     //heavy kick 3
+        status=5;
+        this->id=16;
+        queue[0]=Qt::Key_I;time[0]=0;
+        break;
     default:
         break;
     }
@@ -258,7 +328,7 @@ skillslot::skillslot(int id)
     if(id>=100&&id<200)
     switch(id)
     {
-    case 10:
+    case 100:
         status=0;
         break;
     case 101:
@@ -442,11 +512,11 @@ player::player()
 player::player(int id)
 {
     int used=0;
-    for(int i=0;i<11;i++)
+    for(int i=0;i<=20;i++)
     {
         skills[i]=skillslot(i);//basic
     }
-    used+=11;
+    used+=20;
     switch(id)
     {
     case 0:     //Aura
