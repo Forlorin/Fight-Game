@@ -2,6 +2,7 @@
 
 EndWidget::EndWidget()
 {
+    setWindowTitle(" ");
     resize(1000,618);
     QPixmap pixmap = QPixmap("://Aura/winBackground.png").scaled(this->size());
     QPalette palette(this->palette());
@@ -94,7 +95,7 @@ EndWidget::EndWidget(int i)
     wins.move(100,100);
     if(i==0)
     {
-        wins.setStyleSheet("QLabel{border-image:url(:/Aura/1PWin.png)}");
+        wins.setStyleSheet("QLabel{border-image:url(:/Aura/2PWin.png)}");
     }
     else
     {

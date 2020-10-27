@@ -132,4 +132,6 @@ void OptionSlot::clear()
         head=head->next;
         delete p;
     }
+    option[0]=noneOpt;
+    option[1]=noneOpt;
 }

@@ -9,6 +9,7 @@ MainWidget::MainWidget(QWidget *parent) :
     ui(new Ui::MainWidget)
 {
     this->setFocusPolicy(Qt::StrongFocus);
+    setWindowTitle("Twin Fighter");
     ui->setupUi(this);
     this->setFixedSize(1500,1000);
     QPixmap pixmap = QPixmap("://Aura/backgrond.png").scaled(this->size());
@@ -462,12 +463,14 @@ void MainWidget::movePlayer()
     switch (optionSlot.getOption(0))
     {
         case moveL:
-            fighterX[0]-=backwardSpeed * moverate[0];
+            if(fighterX[0]>=100)
+                fighterX[0]-=backwardSpeed * moverate[0];
             playerStatue[0]=faceState?5:4;
             str="moveL";
             break;
         case moveR:
-            fighterX[0]+=forwardSpeed * moverate[0];
+            if(fighterX[0]<=1400)
+                fighterX[0]+=forwardSpeed * moverate[0];
             playerStatue[0]=faceState?4:5;
             str="moveR";
             break;
@@ -488,12 +491,14 @@ void MainWidget::movePlayer()
     switch (optionSlot.getOption(1))
     {
         case moveL:
-            fighterX[1]-=forwardSpeed * moverate[1];
+            if(fighterX[1]>=100)
+                fighterX[1]-=forwardSpeed * moverate[1];
             playerStatue[1]=faceState?4:5;
             str="moveL";
             break;
         case moveR:
-            fighterX[1]+=backwardSpeed * moverate[1];
+            if(fighterX[1]<=1400)
+                fighterX[1]+=backwardSpeed * moverate[1];
             playerStatue[1]=faceState?5:4;
             str="moveR";
             break;
