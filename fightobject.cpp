@@ -184,7 +184,7 @@ Hitbox::Hitbox(int cha,int ski,int fri,bool hasimg)
         break;
     }
 
-    qDebug()<<img<<' '<<dx<<' '<<dy<<' '<<w<<' '<<h;
+    //qDebug()<<img<<' '<<dx<<' '<<dy<<' '<<w<<' '<<h;
 }
 
 
@@ -260,7 +260,7 @@ Action::Action()
 Action::Action(int cha, int ski)
 {
     aironly=0;
-    qDebug()<<"Build "<<QString::number(ski);
+    //qDebug()<<"Build "<<QString::number(ski);
     jump=0;
     move=0;
     next=1;
@@ -304,16 +304,19 @@ Action::Action(int cha, int ski)
             break;
         case 4:         //move forward
             len=10;
+            move=1;
             loop=-len;
             ski=20;
             break;
         case 5:         //move backward
             len=6;
+            move=1;
             loop=-len;
             ski=21;
             break;
         case 6:         //jump
             len=7;
+            move=0.5;
             loop=len;
             ski=41;
             next=24;
@@ -321,6 +324,7 @@ Action::Action(int cha, int ski)
             break;
         case 24:         //falling
             len=1;
+            move=0.5;
             aironly=1;
             loop=-len;
             ski=41;
@@ -330,7 +334,7 @@ Action::Action(int cha, int ski)
             len=8;
             loop=len;
             ski=100;
-            move=1.5;
+            move=2;
             break;
         case 8:         //dash backward
             len=4;
@@ -403,6 +407,7 @@ Action::Action(int cha, int ski)
         case 19:        //floor kick
             len=7;
             loop=len;
+            move=2;
             ski=410;
             next=3;
             tdam=7;
@@ -424,6 +429,8 @@ Action::Action(int cha, int ski)
             len=10;     //special
             loop=len;
             ski=1000;
+            no_hit=0;
+            tdam=1;
             force=2;
             break;
         case 23:        //upper punch
@@ -437,6 +444,7 @@ Action::Action(int cha, int ski)
         case 25:        //flying punch
             len=7;
             aironly=1;
+            move=0.5;
             loop=len;
             ski=600;
             next=24;
@@ -446,6 +454,7 @@ Action::Action(int cha, int ski)
             len=5;      //flying kick
             aironly=1;
             loop=len;
+            move=0.5;
             ski=610;
             next=24;
             tdam=8;
@@ -453,7 +462,10 @@ Action::Action(int cha, int ski)
         }
         for(int i=st;i<st+len;i++)
         {
-            damage[i]=tdam;
+            if(!i<no_hit)
+                damage[i]=tdam;
+            else
+                damage[i]=0;
             //qDebug()<<QString::number(i)<<":";
             if(!(i<no_hit))
                 hits[i-st]=Hitbox(0,ski,i,0);
@@ -643,9 +655,13 @@ bool Character::do_act(int id,int pri)
 {
     if(id<0||id>actnum)
         return false;
+    if(id==25)
+    {
+        qDebug()<<"?";
+    }
     if(status==0||status==-1||pri<=-10||pri>100)
     {
-        if(!acts[id].isAirOnly()==in_air&&pri>-10)
+        if(!acts[id].isAirOnly()==in_air&&pri>-10&&pri<15)
              return false;
         if(!(pri>act_pri||(pri<-1&&act_pri>0)||(id<=5&&(act_doing<=5||act_doing==24)&&id!=act_doing)||pri<=-10||pri>100))
             return false;

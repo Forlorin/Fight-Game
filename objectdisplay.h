@@ -17,6 +17,7 @@ public:
     void setParent(QWidget* parent);
     void display(int x, int y, QString imgPath);
     void display(int x, int y);
+    void display(int x, int y, int dx, int dy, int w, int h);
     void display(int x, int y, int dx, int dy, int w, int h, QPixmap img);
     void setText (QString str);
 };
@@ -52,11 +53,13 @@ class HeroSelece
     int selectNum[2];
 public:
     QPushButton heroHead[2][2];
+    QPushButton sure;
     HeroSelece();
     void changeSelect(int i, int j);
     void setParent(QWidget* father);
     void hide();
     void show();
 };
+
 
 #endif // OBJECTDISPLAY_H

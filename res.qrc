@@ -1645,5 +1645,17 @@
         <file>Aura/Aura by Crucifix_31586-17.png</file>
         <file>Aura/Aura by Crucifix_31586-18.png</file>
         <file>Aura/Aura by Crucifix_31586-19.png</file>
+        <file>Aura/background·.jpg</file>
+        <file>Aura/backgrond.png</file>
+        <file>Aura/winBackground.png</file>
+        <file>Aura/1PWin.png</file>
+        <file>Aura/2PWin.png</file>
+        <file>Aura/SubHome.png</file>
+        <file>Aura/SubRefresh.png</file>
+        <file>Aura/SunExit.png</file>
+        <file>Aura/1P.png</file>
+        <file>Aura/P2.png</file>
+        <file>Aura/Sure.png</file>
     </qresource>
+    <qresource prefix="/Ui"/>
 </RCC>

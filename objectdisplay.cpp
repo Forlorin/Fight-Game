@@ -37,6 +37,12 @@ void FighterDisplay::display(int x, int y, int dx, int dy, int w, int h, QPixmap
     displayLabel.setStyleSheet("QLabel{border:2px solid #242424;}");
 
 }
+void FighterDisplay::display(int x, int y, int dx, int dy, int w, int h)
+{
+    displayLabel.move(x+dx,y-dy);
+    displayLabel.resize(w,h);
+    displayLabel.clear();
+}
 
 void FighterDisplay::setText (QString str)
 {
@@ -92,7 +98,7 @@ void HitBoxLabels::display(int i, int x, int y, int width, int hight)
         p->move(x,y);
         p->resize(width,hight);
         hitBox[i].show();
-        p->setStyleSheet("QLabel{border:2px solid #242424;}");
+        hitBox[i].clear();
     }
 }
 
@@ -121,48 +127,56 @@ bool Trangle::isHit(Trangle &beHit)
 
 HeroSelece::HeroSelece()
 {
+    QFont ft;
+    ft.setPointSize(20);
+    ft.setBold(true);
+    ft.setFamily("Microsoft YaHei");
+
+    QPalette pa;
+    pa.setColor(QPalette::WindowText,QColor(233,0,0));
+
     for (int i=0; i<2; i++)
     {
-        playerTitle[i].move(i?1200:200,200);
-        playerTitle[i].resize(200,120);
-        playerTitle[i].setText("1P\n  |");
-
-        playerTitle[i].setStyleSheet("background-color:rgb(255,255,255);");
+        playerTitle[i].move(i?1000:200,100);
+        playerTitle[i].resize(150,150);
         playerTitle[i].setAlignment(Qt::AlignCenter);
-
-        QFont ft;
-        ft.setPointSize(12);
-        ft.setBold(true);
-        ft.setFamily("Microsoft YaHei");
         playerTitle[i].setFont(ft);
-
-        QPalette pa;
-        pa.setColor(QPalette::WindowText,QColor(233,0,0));
-        playerTitle[i].setPalette(pa);
 
         for (int j=0; j<2; j++)
         {
-            heroHead[i][j].resize(100,100);
-            heroHead[i][j].move(i?1200:200+j*120,400);
+            heroHead[i][j].resize(150,400);
+            heroHead[i][j].move((i?1000:200)+(j*200),300);
             heroHead[i][j].setFont(ft);
-            heroHead[i][j].setText(QString::number(j));
             pa.setColor(QPalette::ButtonText,QColor(233,0,0));
             heroHead[i][j].setPalette(pa);
-            heroHead[i][j].setStyleSheet("background-color:rgb(255,255,255);");
         }
     }
+
+    playerTitle[0].setStyleSheet("QLabel{border-image:url(:Aura/1P.png)}");
+    playerTitle[1].setStyleSheet("QLabel{border-image:url(:Aura/P2.png)}");
+
+    heroHead[0][0].setStyleSheet("QPushButton{border-image:url(:Aura/Aura by Crucifix_0-1.png)}");
+    heroHead[0][1].setStyleSheet("QPushButton{border-image:url(:Aura/Aura by Crucifix_20-5.png)}");
+    heroHead[1][0].setStyleSheet("QPushButton{border-image:url(:Aura/Aura by Crucifix_0-1.png)}");
+    heroHead[1][1].setStyleSheet("QPushButton{border-image:url(:Aura/Aura by Crucifix_20-5.png)}");
+
+    sure.resize(200,120);
+    sure.move(700,700);
+    sure.setFont(ft);
+    sure.setStyleSheet("QPushButton{border-image:url(:Aura/Sure.png)}");
+
 }
 
 void HeroSelece::changeSelect(int i, int j)
 {
     if (i==0)
     {
-        playerTitle[0].move(200+j*120,200);
+        playerTitle[0].move(200+j*200,100);
         selectNum[0]=j;
     }
     if (i==1)
     {
-        playerTitle[1].move(1200+j*120, 200);
+        playerTitle[1].move(1000+j*200, 100);
         selectNum[0]=j;
     }
 }
@@ -177,6 +191,7 @@ void HeroSelece::setParent(QWidget *father)
             heroHead[i][j].setParent(father);
         }
     }
+    sure.setParent(father);
 }
 
 void HeroSelece::hide()
@@ -189,6 +204,7 @@ void HeroSelece::hide()
             heroHead[i][j].hide();
         }
     }
+    sure.hide();
 }
 
 void HeroSelece::show()
@@ -201,4 +217,8 @@ void HeroSelece::show()
             heroHead[i][j].show();
         }
     }
+    sure.show();
 }
+
+
+

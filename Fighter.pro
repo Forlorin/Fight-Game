@@ -29,14 +29,16 @@ SOURCES += \
     fightobject.cpp \
     inputslot.cpp \
     objectdisplay.cpp \
-    optionslot.cpp
+    optionslot.cpp \
+    endwidget.cpp
 
 HEADERS += \
         mainwidget.h \
     fightobject.h \
     inputslot.h \
     objectdisplay.h \
-    optionslot.h
+    optionslot.h \
+    endwidget.h
 
 FORMS += \
         mainwidget.ui

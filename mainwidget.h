@@ -10,6 +10,7 @@
 #include "fightobject.h"
 #include "objectdisplay.h"
 #include "optionslot.h"
+#include "endwidget.h"
 
 namespace Ui
 {
@@ -34,6 +35,10 @@ class MainWidget : public QWidget
     int backwardSpeed;
     int hp[2];
     int state[2];
+    int timerId;
+    int jumpSecond[2];
+    bool isjump[2];
+
     QLabel hpBar[2];
     HitBoxLabels hitboxLabels;
     HitBoxLabels beHitBoxLabels;
@@ -43,6 +48,7 @@ class MainWidget : public QWidget
     QLabel Debug[2];
     OptionSlot optionSlot;
     HeroSelece heroSelect;
+    EndWidget* endWidget;
     bool faceState;
 
 public:
@@ -57,6 +63,8 @@ public:
     bool isIn(int pointX, int pointY, int x1, int y1, int x2, int y2);
     void movePlayer();
     void initialize();
+    void showEndWidget(int i);
+    void exitEndWidget(int returnNum);
 private:
     Ui::MainWidget *ui;
 

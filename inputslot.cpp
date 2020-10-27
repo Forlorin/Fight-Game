@@ -92,7 +92,7 @@ int inputslot::trans(int id,bool face)
         return Qt::Key_O;
 
     default:
-        qDebug()<<"Error Keytrans "<<id;
+        //qDebug()<<"Error Keytrans "<<id;
         return 0;
     }
 }
@@ -449,6 +449,13 @@ skillslot::skillslot(int id)
         this->id=26;
         queue[0]=Qt::Key_I;time[0]=0;
         break;
+    case 115:
+        len=1;
+        priority=3;    //blow ice    3
+        status=1;
+        this->id=22;
+        queue[0]=Qt::Key_O;time[0]=0;
+        break;
     }
 }
 
@@ -520,7 +527,7 @@ player::player(int id)
     switch(id)
     {
     case 0:     //Aura
-        for(int i=1;i<=14;i++)
+        for(int i=1;i<=15;i++)
         {
             skills[used++]=skillslot(100+i);
         }

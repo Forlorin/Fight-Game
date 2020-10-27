@@ -36,6 +36,7 @@ public:
     void setOption(int i);
     OPTION getOption(int i);
     void coutOpt();
+    void clear();
 };
 
 #endif // OPTIONSLOT_H

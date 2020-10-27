@@ -17,14 +17,6 @@ void OptionSlot::addKeyQueue(KEYPRS tKeyPrs)
         head=p;
         return;
     }
-    if(tKeyPrs==kW||tKeyPrs==kUp)
-    {
-        Queue* p;
-        p=new Queue(tKeyPrs);
-        p->next=head;
-        head=p;
-        return;
-    }
     if(head==nullptr)
     {
         head=new Queue(tKeyPrs);
@@ -123,10 +115,21 @@ OPTION OptionSlot::getOption(int i)
 void OptionSlot::coutOpt()
 {
     Queue *p=head;
-    qDebug()<<"output";
+    //qDebug()<<"output";
     while (p!=nullptr)
     {
-        qDebug()<<p->keyPrs;
+        //qDebug()<<p->keyPrs;
         p=p->next;
+    }
+}
+
+void OptionSlot::clear()
+{
+    Queue *p;
+    while (head!=nullptr)
+    {
+        p=head;
+        head=head->next;
+        delete p;
     }
 }

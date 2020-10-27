@@ -9,21 +9,28 @@ MainWidget::MainWidget(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::MainWidget)
 {
+    this->setFocusPolicy(Qt::StrongFocus);
     ui->setupUi(this);
     this->setFixedSize(1500,1000);
+    QPixmap pixmap = QPixmap("://Aura/backgrond.png").scaled(this->size());
+    QPalette palette(this->palette());
+    palette.setBrush(QPalette::Background, QBrush(pixmap));
+    this->setPalette(palette);
     heroSelect.setParent(this);
     for(int i=0; i<2; i++)
     {
         for (int j=0; j<2; j++)
         {
-             connect(&heroSelect.heroHead[i][j], &QPushButton::clicked, this, [=]()
-             {
+             connect(&heroSelect.heroHead[i][j], &QPushButton::clicked, this, [=](){
                  heroSelect.changeSelect(i, j);
              });
         }
     }
+    connect(&heroSelect.sure, &QPushButton::clicked, this, [=](){
+        initialize();
+        heroSelect.hide();
+    });
 
-    initialize();
 }
 
 void MainWidget::initialize()
@@ -41,6 +48,10 @@ void MainWidget::initialize()
     fighterY[1]=900;
     forwardSpeed=15;
     backwardSpeed=11;
+    jumpSecond[0]=0;
+    jumpSecond[1]=0;
+    isjump[0]=false;
+    isjump[1]=false;
     //设置初始数据
 
     for (int i=0; i<2; i++)
@@ -48,7 +59,9 @@ void MainWidget::initialize()
     Debug[i].resize(10,500);
     Debug[i].setParent(this);
     Debug[i].setStyleSheet("QLabel{background-color:rgb(248,168,0);}");
+    Debug[i].hide();
     }
+
 
     fightObject=new FightObject(800,500,heroName[0],heroName[1]);
     fightObject->player[0].set_health(100);
@@ -60,20 +73,21 @@ void MainWidget::initialize()
     {
         fighterDisplay[i].setParent(this);
         fighterDisplay[i].setOrder(i);
+        fighterDisplay[i].displayLabel.show();
     }
     //初始化人物，并设置人物初始画面
     for (int i=0; i<2; i++)
     {
         hpBar[i].setParent(this);
-        hpBar[i].resize(300,30);
-        hpBar[i].move(50+i*400, 30);
+        hpBar[i].resize(600,60);
+        hpBar[i].move(50+i*800, 30);
         QFont font ( "Microsoft YaHei", 20, 75);
         hpBar[i].setFont(font);
-        hpBar[i].setText(i?"2":"1"); //清空字体
         hpBar[i].setStyleSheet("QLabel{background-color:rgb(248,168,0);}");
+        hpBar[i].show();
     }//设置血条
 
-    startTimer(INTERVAL);
+    timerId=startTimer(INTERVAL);
     //开启定时器
 }
 
@@ -89,6 +103,7 @@ void MainWidget:: keyPressEvent(QKeyEvent *event)
     if(!event->isAutoRepeat())
     {
         inputSlot->push(event->key(),faceState);
+
         switch(event->key())
         {
             case Qt::Key_S:
@@ -103,9 +118,6 @@ void MainWidget:: keyPressEvent(QKeyEvent *event)
                 optionSlot.addKeyQueue(kD);
                 optionSlot.setOption(0);
                 break;
-//            case Qt::Key_W:
-//                optionSlot.addKeyQueue(kW);
-//                optionSlot.setOption(0);
             case Qt::Key_Down:
                 optionSlot.addKeyQueue(kDown);
                 optionSlot.setOption(1);
@@ -118,13 +130,8 @@ void MainWidget:: keyPressEvent(QKeyEvent *event)
                 optionSlot.addKeyQueue(kRight);
                 optionSlot.setOption(1);
                 break;
-//            case Qt::Key_Up:
-////                optionSlot.addKeyQueue(kUp);
-////                optionSlot.setOption(1);
-//            break;
-         }
-        //optionSlot.coutOpt();
 
+         }
     }
 }
 
@@ -231,20 +238,32 @@ void MainWidget::timerEvent(QTimerEvent *event)
         hit[i].get(x,y,w,h,str);
         if(w!=0&&h!=0)
         {
-            QImage image(str);
-            if(bool(i)==faceState)
-                image=image.mirrored(true,false);
-            image=image.scaled(w*4,h*4);
+            if(str=="")
+            {
+                fighterDisplay[i].display
+                        ( fighterX[i] , fighterY[i],
+                         (flag?x:-w-x)*4 , y*4,w*4,h*4);
+                hitTrangle[i].x=fighterX[i]+(flag?x:-w-x)*4;
+                hitTrangle[i].y=fighterY[i]-y*4;
+                hitTrangle[i].w=w*4;
+                hitTrangle[i].h=h*4;
+            }
+            else
+            {
+                QImage image(str);
+                if(bool(i)==faceState)
+                    image=image.mirrored(true,false);
+                image=image.scaled(w*4,h*4);
 
-            fighterDisplay[i].display
-                    ( fighterX[i] , fighterY[i],
-                     (flag?x:-w-x)*4 , y*4,w*4,h*4,
-                     QPixmap::fromImage(image));
-            hitTrangle[i].x=fighterX[i]+(flag?x:-w-x)*4;
-            hitTrangle[i].y=fighterY[i]-y*4;
-            hitTrangle[i].w=w*4;
-            hitTrangle[i].h=h*4;
-
+                fighterDisplay[i].display
+                        ( fighterX[i] , fighterY[i],
+                         (flag?x:-w-x)*4 , y*4,w*4,h*4,
+                         QPixmap::fromImage(image));
+                hitTrangle[i].x=fighterX[i]+(flag?x:-w-x)*4;
+                hitTrangle[i].y=fighterY[i]-y*4;
+                hitTrangle[i].w=w*4;
+                hitTrangle[i].h=h*4;
+            }
             Debug[i].move(fighterX[i]-5,fighterY[i]-500);
         }
         //人物显示
@@ -255,15 +274,10 @@ void MainWidget::timerEvent(QTimerEvent *event)
             if(str=="")
             {
                 hitboxLabels.display
-                        ( i ,
-                          fighterX[i]+(flag?x:-w-x)*4,
-                          fighterY[i]-y*4 , w*4 , h*4
-                          );
-
-                ataTrangle[i].x=fighterX[i]+(flag?x:-w-x)*4;
-                ataTrangle[i].y=fighterY[i]-y*4;
-                ataTrangle[i].w=w*4;
-                ataTrangle[i].h=h*4;
+                    ( i ,
+                      fighterX[i]+(flag?x:-w-x)*4,
+                      fighterY[i]-y*4 , w*4 , h*4
+                    );
             }
             else
             {
@@ -272,17 +286,16 @@ void MainWidget::timerEvent(QTimerEvent *event)
                     image=image.mirrored(true,false);
                 image=image.scaled(w*4,h*4);
                 hitboxLabels.display
-                        ( i ,
-                          fighterX[i]+(flag?x:-w-x)*4,
-                          fighterY[i]-y*4 , w*4 , h*4 ,
-                          QPixmap::fromImage(image)
-                        );
-
+                    ( i ,
+                      fighterX[i]+(flag?x:-w-x)*4,
+                      fighterY[i]-y*4 , w*4 , h*4 ,
+                      QPixmap::fromImage(image)
+                    );
+            }
                 ataTrangle[i].x=fighterX[i]+(flag?x:-w-x)*4;
                 ataTrangle[i].y=fighterY[i]-y*4;
                 ataTrangle[i].w=w*4;
                 ataTrangle[i].h=h*4;
-            }
         }
         else
         {
@@ -327,25 +340,36 @@ void MainWidget::timerEvent(QTimerEvent *event)
     {
         damage[0]=fightObject->player[0].get_damage();
     }
+    if(isUnderAttack[0])
+    {
+        qDebug()<<"?";
+    }
     if(isUnderAttack[0]&&fightObject->player[0].beHit(force[1]))
     {
         health=fightObject->player[0].get_health();
         health-=damage[1];
+        if(health<=0)
+        {
+            showEndWidget(0);
+        }
         fightObject->player[0].set_health(health);
-        hpBar[0].resize(int(300.0*health/100),30);
+        hpBar[0].resize(int(600.0*health/100),60);
         //qDebug()<<"0 get hit :"<<fightObject->player[1].act_doing;
     }
     if(isUnderAttack[1]&&fightObject->player[1].beHit(force[0]))
     {
         health=fightObject->player[1].get_health();
         health-=damage[0];
+        if(health<=0)
+        {
+            showEndWidget(1);
+        }
         fightObject->player[1].set_health(health);
-        hpBar[1].resize(int(300.0*health/100),30);
+        int length =int(600.0*health/100);
+        hpBar[1].resize(length,60);
+        hpBar[1].move(1450-length,30);
         //qDebug()<<"1 get hit :"<<fightObject->player[1].act_doing;
     }
-
-
-
 
     fightObject->player[0].update();
     fightObject->player[1].update();
@@ -413,10 +437,14 @@ void MainWidget::timerEvent(QTimerEvent *event)
 void MainWidget::movePlayer()
 {
     float moverate[2]{1,1};
-//    moverate[0]=fightObject->player[0].get_action().get_move();
-//    moverate[1]=fightObject->player[1].get_action().get_move();
-//    qDebug()<<moverate[0]<<moverate[1];
+    moverate[0]=fightObject->player[0].get_action().get_move();
+    moverate[1]=fightObject->player[1].get_action().get_move();
+
     QString str;
+    static int jumpSpeed[20]
+    {51,45,39,33,27,21,15,9,3,0,0,-3,-9,-15,-21,-27,-33,-39,-45,-51};
+
+
     switch (optionSlot.getOption(0))
     {
         case moveL:
@@ -438,6 +466,10 @@ void MainWidget::movePlayer()
             str = "squat";
             break;
     }
+    if(jumpSecond[0])
+        playerStatue[0]=2;
+    if(jumpSecond[1])
+        playerStatue[1]=2;
     fighterDisplay[0].setText(str);
     switch (optionSlot.getOption(1))
     {
@@ -476,25 +508,159 @@ void MainWidget::movePlayer()
         backwardSpeed=i;
         faceState=!faceState;
     }
-    static int jumpSpeed[2][20]
-    {9,9,7,7,5,5,3,3,1,0,0,-1,-3,-3,-5,-5,-7,-7,-9,-9,
-    9,9,7,7,5,5,3,3,1,0,0,-1,-3,-3,-5,-5,-7,-7,-9,-9};
-    static int jumpSecond[2]{0,0};
-//    for(int i=0; i<2; i++)
-//    {
-        //qDebug()<<fightObject->player[0].get_action().isJump();
-        if(fightObject->player[0].get_action().isJump()==true);
+
+
+    if(isjump[0]==false&&jumpSecond[0]==0)
+    {
+        if(isjump[0]=fightObject->player[0].get_action().isJump())
         {
-            if(jumpSecond[0]==0)
-            {
-                jumpSecond[0]==1;
-            }
-            if(jumpSecond[0]<=10)
-            {
-                fighterY[0]+=jumpSpeed[0][jumpSecond[0]-1];
-            }
+            jumpSecond[0]=1;
+            fightObject->player[0].set_in_air(true);
+            //fightObject->player[0].set_status(2);
+            playerStatue[0]=2;
         }
-//    }
+
+    }
+    if(jumpSecond[0])
+    {
+        if(jumpSecond[0]<=20)
+        {
+            fighterY[0]-=jumpSpeed[jumpSecond[0]-1];
+            jumpSecond[0]++;
+        }
+        else
+        {
+            isjump[0]=false;
+            jumpSecond[0]=0;
+            fightObject->player[0].set_in_air(false);
+            //fightObject->player[0].set_status(0);
+            playerStatue[0]=1;
+        }
+    }
+
+
+    if(isjump[1]==false&&jumpSecond[1]==0)
+    {
+        if(isjump[1]=fightObject->player[1].get_action().isJump())
+        {
+            jumpSecond[1]=1;
+            fightObject->player[1].set_in_air(true);
+            //fightObject->player[1].set_status(2);
+            playerStatue[1]=2;
+        }
+
+    }
+    if(jumpSecond[1])
+    {
+        if(jumpSecond[1]<=20)
+        {
+            fighterY[1]-=jumpSpeed[jumpSecond[1]-1];
+            jumpSecond[1]++;
+        }
+        else
+        {
+            isjump[1]=false;
+            jumpSecond[1]=0;
+            fightObject->player[1].set_in_air(false);
+            //fightObject->player[1].set_status(0);
+            playerStatue[1]=1;
+        }
+    }
 }
+
+void MainWidget::showEndWidget(int i)
+{
+    endWidget=new EndWidget(i);
+    void (EndWidget:: * endWidgetSignals )(int) = &EndWidget::exitSubWidget;
+    void (MainWidget:: * mainWidgetSlot )(int) = &MainWidget::exitEndWidget;
+    connect(endWidget, endWidgetSignals, this, mainWidgetSlot);
+    endWidget->show();
+
+    killTimer(timerId);
+    endWidget->setFocus();
+    optionSlot.clear();
+}
+
+void MainWidget::exitEndWidget(int returnNum)
+{
+    if(returnNum==0)
+    {
+        QApplication* app;
+        app->exit(0);
+    }//完全退出程序
+
+    else if(returnNum==1)
+    {
+
+        faceState=true;
+        jumpSecond[0]=0;
+        jumpSecond[1]=0;
+        isjump[0]=false;
+        isjump[1]=false;
+
+        for(int i=0;i<2;i++)
+        {
+             heroName[i]=0;
+             playerStatue[i]=1;
+        }
+
+        fighterX[0]=200;
+        fighterY[0]=900;
+        fighterX[1]=1200;
+        fighterY[1]=900;
+        forwardSpeed=15;
+        backwardSpeed=11;
+        //重新初始化人物位置数据
+
+        for (int i=0; i<2; i++)
+        {
+        Debug[i].resize(10,500);
+        Debug[i].setParent(this);
+        Debug[i].setStyleSheet("QLabel{background-color:rgb(248,168,0);}");
+        Debug[i].hide();
+        }
+        delete fightObject;
+        fightObject = nullptr;
+        fightObject=new FightObject(800,500,heroName[0],heroName[1]);
+        fightObject->player[0].set_health(100);
+        fightObject->player[1].set_health(100);
+
+        delete inputSlot;
+        inputSlot= nullptr;
+        inputSlot = new inputslot(heroName[0],heroName[1]);
+        //重新初始化人物数据
+
+
+        for (int i=0; i<2; i++)
+        {
+            hpBar[i].resize(600,60);
+            hpBar[i].move(50+i*800, 30);
+        }//重新设置血条
+
+        timerId=startTimer(INTERVAL);
+        //开启定时器
+    }
+    //重开一局
+
+    else if(returnNum == 2)
+    {
+        jumpSecond[0]=0;
+        jumpSecond[1]=0;
+        isjump[0]=false;
+        isjump[1]=false;
+        heroSelect.show();
+        Debug[0].hide();
+        Debug[1].hide();
+        hitboxLabels.hide(0);
+        hitboxLabels.hide(1);
+        fighterDisplay[0].displayLabel.hide();
+        fighterDisplay[1].displayLabel.hide();
+        hpBar[0].hide();
+        hpBar[1].hide();
+    }
+    //返回主菜单
+}
+
+
 
 
