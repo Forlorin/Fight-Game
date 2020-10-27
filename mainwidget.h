@@ -38,7 +38,7 @@ class MainWidget : public QWidget
     int timerId;
     int jumpSecond[2];
     bool isjump[2];
-
+    bool isStart;
     QLabel hpBar[2];
     HitBoxLabels hitboxLabels;
     HitBoxLabels beHitBoxLabels;

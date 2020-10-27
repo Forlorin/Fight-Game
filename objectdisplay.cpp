@@ -34,7 +34,7 @@ void FighterDisplay::display(int x, int y, int dx, int dy, int w, int h, QPixmap
     displayLabel.move(x+dx,y-dy);
     displayLabel.resize(w,h);
     displayLabel.setPixmap(img);
-    displayLabel.setStyleSheet("QLabel{border:2px solid #242424;}");
+    //displayLabel.setStyleSheet("QLabel{border:2px solid #242424;}");
 
 }
 void FighterDisplay::display(int x, int y, int dx, int dy, int w, int h)
@@ -83,7 +83,7 @@ void HitBoxLabels::display(int i, int x, int y, int width, int hight,QPixmap img
         p->resize(width,hight);
         hitBox[i].show();
         p->setPixmap(img);
-        p->setStyleSheet("QLabel{border:2px solid #242424;}");
+        //p->setStyleSheet("QLabel{border:2px solid #242424;}");
     }
 }
 void HitBoxLabels::display(int i, int x, int y, int width, int hight)

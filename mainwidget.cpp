@@ -3,7 +3,6 @@
 #include <QPixmap>
 #define INTERVAL 33
 
-bool hitboxTest(Hitbox A, Hitbox B, int xA, int yA, int xB, int yB);
 
 MainWidget::MainWidget(QWidget *parent) :
     QWidget(parent),
@@ -17,6 +16,7 @@ MainWidget::MainWidget(QWidget *parent) :
     palette.setBrush(QPalette::Background, QBrush(pixmap));
     this->setPalette(palette);
     heroSelect.setParent(this);
+    isStart=false;
     for(int i=0; i<2; i++)
     {
         for (int j=0; j<2; j++)
@@ -36,6 +36,7 @@ MainWidget::MainWidget(QWidget *parent) :
 void MainWidget::initialize()
 {
     faceState=true;
+    isStart=true;
 
     for(int i=0;i<2;i++)
     {
@@ -56,10 +57,14 @@ void MainWidget::initialize()
 
     for (int i=0; i<2; i++)
     {
-    Debug[i].resize(10,500);
+    Debug[i].resize(100,30);
+    Debug[i].move(fighterX[i]-50,950);
     Debug[i].setParent(this);
-    Debug[i].setStyleSheet("QLabel{background-color:rgb(248,168,0);}");
-    Debug[i].hide();
+    QString str="QLabel{background-color:rgb(";
+    str+=(i?"255,168,0":"0,50,255");
+    str+=");}";
+    Debug[i].setStyleSheet(str);
+    Debug[i].show();
     }
 
 
@@ -100,76 +105,82 @@ MainWidget::~MainWidget()
 
 void MainWidget:: keyPressEvent(QKeyEvent *event)
 {
-    if(!event->isAutoRepeat())
+    if(isStart)
     {
-        inputSlot->push(event->key(),faceState);
-
-        switch(event->key())
+        if(!event->isAutoRepeat())
         {
-            case Qt::Key_S:
-                optionSlot.addKeyQueue(kS);
-                optionSlot.setOption(0);
-                break;
-            case Qt::Key_A:
-                optionSlot.addKeyQueue(kA);
-                optionSlot.setOption(0);
-                break;
-            case Qt::Key_D:
-                optionSlot.addKeyQueue(kD);
-                optionSlot.setOption(0);
-                break;
-            case Qt::Key_Down:
-                optionSlot.addKeyQueue(kDown);
-                optionSlot.setOption(1);
-                break;
-            case Qt::Key_Left:
-                optionSlot.addKeyQueue(kLeft);
-                optionSlot.setOption(1);
-                break;
-            case Qt::Key_Right:
-                optionSlot.addKeyQueue(kRight);
-                optionSlot.setOption(1);
-                break;
+            inputSlot->push(event->key(),faceState);
 
-         }
+            switch(event->key())
+            {
+                case Qt::Key_S:
+                    optionSlot.addKeyQueue(kS);
+                    optionSlot.setOption(0);
+                    break;
+                case Qt::Key_A:
+                    optionSlot.addKeyQueue(kA);
+                    optionSlot.setOption(0);
+                    break;
+                case Qt::Key_D:
+                    optionSlot.addKeyQueue(kD);
+                    optionSlot.setOption(0);
+                    break;
+                case Qt::Key_Down:
+                    optionSlot.addKeyQueue(kDown);
+                    optionSlot.setOption(1);
+                    break;
+                case Qt::Key_Left:
+                    optionSlot.addKeyQueue(kLeft);
+                    optionSlot.setOption(1);
+                    break;
+                case Qt::Key_Right:
+                    optionSlot.addKeyQueue(kRight);
+                    optionSlot.setOption(1);
+                    break;
+
+             }
+        }
     }
+
 }
 
 void MainWidget::keyReleaseEvent(QKeyEvent *event)
 {
-    if(!event->isAutoRepeat())
+    if(isStart)
     {
-        switch(event->key())
+        if(!event->isAutoRepeat())
         {
-            case Qt::Key_S:
-                optionSlot.removeKeyQueue(kS);
-                optionSlot.setOption(0);
-                break;
-            case Qt::Key_A:
-                optionSlot.removeKeyQueue(kA);
-                optionSlot.setOption(0);
-                break;
-            case Qt::Key_D:
-                optionSlot.removeKeyQueue(kD);
-                optionSlot.setOption(0);
-                break;
-            case Qt::Key_Down:
-                optionSlot.removeKeyQueue(kDown);
-                optionSlot.setOption(1);
-                break;
-            case Qt::Key_Left:
-                optionSlot.removeKeyQueue(kLeft);
-                optionSlot.setOption(1);
-                break;
-            case Qt::Key_Right:
-                optionSlot.removeKeyQueue(kRight);
-                optionSlot.setOption(1);
-                break;
+            switch(event->key())
+            {
+                case Qt::Key_S:
+                    optionSlot.removeKeyQueue(kS);
+                    optionSlot.setOption(0);
+                    break;
+                case Qt::Key_A:
+                    optionSlot.removeKeyQueue(kA);
+                    optionSlot.setOption(0);
+                    break;
+                case Qt::Key_D:
+                    optionSlot.removeKeyQueue(kD);
+                    optionSlot.setOption(0);
+                    break;
+                case Qt::Key_Down:
+                    optionSlot.removeKeyQueue(kDown);
+                    optionSlot.setOption(1);
+                    break;
+                case Qt::Key_Left:
+                    optionSlot.removeKeyQueue(kLeft);
+                    optionSlot.setOption(1);
+                    break;
+                case Qt::Key_Right:
+                    optionSlot.removeKeyQueue(kRight);
+                    optionSlot.setOption(1);
+                    break;
+            }
+
+            //optionSlot.coutOpt();
         }
-
-        //optionSlot.coutOpt();
     }
-
 }
 
 
@@ -179,6 +190,10 @@ void MainWidget::timerEvent(QTimerEvent *event)
 {
     /*************位移****************/
     movePlayer();
+    for(int i=0; i<2; i++)
+    {
+        Debug[i].move(fighterX[i]-50,950);
+    }
 
     /*************判定****************/
     /* 获取当前人物是否自由的状态
@@ -264,7 +279,6 @@ void MainWidget::timerEvent(QTimerEvent *event)
                 hitTrangle[i].w=w*4;
                 hitTrangle[i].h=h*4;
             }
-            Debug[i].move(fighterX[i]-5,fighterY[i]-500);
         }
         //人物显示
 
@@ -442,7 +456,7 @@ void MainWidget::movePlayer()
 
     QString str;
     static int jumpSpeed[20]
-    {51,45,39,33,27,21,15,9,3,0,0,-3,-9,-15,-21,-27,-33,-39,-45,-51};
+    {68,60,52,44,36,28,20,12,4,0,0,-4,-12,-20,-28,-36,-44,-52,-60,-68};
 
 
     switch (optionSlot.getOption(0))
@@ -577,6 +591,7 @@ void MainWidget::showEndWidget(int i)
     endWidget->show();
 
     killTimer(timerId);
+    isStart=false;
     endWidget->setFocus();
     optionSlot.clear();
 }
@@ -591,7 +606,7 @@ void MainWidget::exitEndWidget(int returnNum)
 
     else if(returnNum==1)
     {
-
+        isStart=true;
         faceState=true;
         jumpSecond[0]=0;
         jumpSecond[1]=0;
@@ -614,10 +629,13 @@ void MainWidget::exitEndWidget(int returnNum)
 
         for (int i=0; i<2; i++)
         {
-        Debug[i].resize(10,500);
+        Debug[i].resize(100,30);
         Debug[i].setParent(this);
-        Debug[i].setStyleSheet("QLabel{background-color:rgb(248,168,0);}");
-        Debug[i].hide();
+        QString str="QLabel{background-color:rgb(";
+        str+=(i?"255,168,0":"0,50,255");
+        str+=");}";
+        Debug[i].setStyleSheet(str);
+        Debug[i].move(fighterX[i]-50,950);
         }
         delete fightObject;
         fightObject = nullptr;
